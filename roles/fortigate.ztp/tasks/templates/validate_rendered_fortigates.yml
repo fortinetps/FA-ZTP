@@ -1,0 +1,12 @@
+---
+
+#- debug: var=ztp_fortigates
+
+- name: Validate Fortigates on Ansible ZTP Role Data Model
+  shell: "python3 {{role_path}}/files/python/ansible_ztp_role_data_model/validate_rendered_fortigates.py -d '{{ ztp_fortigates | to_json }}'"
+  register: validation_results
+
+
+- name: Validation Results
+  debug: var=validation_results.stdout
+

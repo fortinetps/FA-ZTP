@@ -1,0 +1,11 @@
+---
+- name: Get the Branch CIDR Pool Files
+  find:
+    paths: "{{role_path}}/files/tmp/branch_cidr_pool/"
+    patterns: "*.yaml"
+  register: branch_cidr_pools
+
+#- debug: msg="{{ branch_cidr_pools.matched }}"
+
+- set_fact:
+    branch_cidr_pool_count: "{{ branch_cidr_pools.matched }}"

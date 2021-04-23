@@ -1,0 +1,30 @@
+- name: Add sdwan template interface member
+  fortinet.fortimanager.fmgr_generic:
+    method: add
+    rc_succeeded:
+      - 0
+      - -2 # already exists
+    params:
+      - url: '/pm/config/adom/{{ default_fmgr_target_adom }}/wanprof/sdwan/members'
+        data:
+          - interface: 'CLOUD_NA_VPN1'
+            name: 'CLOUD_NA_VPN1'
+            comment: '{{ default_fmgr_object_description_string }}'
+#            zone: '{{ item.zone }}'
+#            gateway: "0.0.0.0"
+#            weight: 1
+#            priority: 0
+#            seq-num: 0
+#            dynamic-mapping:
+#            spillover-threshold: 0
+#            volume-ratio: 1
+#            status: 1
+#            ingress-spillover-threshold: 0
+#            source: "0.0.0.0"
+#            gateway6: "::"
+#            source6: ""
+#            cost: 0
+
+#
+#  loop: "{{ default_branch_sdwan_template_interface_members }}"
+

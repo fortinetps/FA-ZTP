@@ -1,0 +1,27 @@
+---
+- set_fact:
+    all_policy_packages: []
+
+- set_fact:
+    all_policy_packages: "{{ all_policy_packages + [
+        {'pkg': item.1.policy_package,
+         'policies': item.1.policies,
+          'adom': item.0.fmgr_target_adom }] }}"
+  loop: "{{ ztp_fortigates | subelements('policy_packages') }}"
+
+#- debug: var=all_policy_packages
+
+- set_fact:
+    flattened_policy_list: []
+
+- set_fact:
+    flattened_policy_list: "{{ flattened_policy_list + [
+      { 'pkg': item.0.pkg,
+        'policy': item.1,
+        'adom': item.0.adom
+      }
+     ]}}"
+  loop: "{{ all_policy_packages | subelements('policies') }}"
+
+#- debug: var=flattened_policy_list
+

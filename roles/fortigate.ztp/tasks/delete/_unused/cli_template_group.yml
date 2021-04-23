@@ -1,0 +1,10 @@
+- fortinet.fortimanager.fmgr_generic:
+    method: delete
+    rc_succeeded:
+      - 0
+      - -2 # already exists
+    params:
+      - url: '/pm/config/adom/{{ default_fmgr_target_adom }}/obj/cli/template-group'
+        data:
+          name: '{{ item }}'
+  loop: "{{ ztp_cli_template_group_names }}"

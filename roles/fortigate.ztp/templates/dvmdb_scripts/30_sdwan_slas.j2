@@ -1,0 +1,22 @@
+{% if item.1.sdwan_slas | length > 0 %}
+config system sdwan
+    config health-check
+{% for sla in item.1.sdwan_slas %}
+        edit "{{ sla.sla_name }}"
+            set server "{{ sla.server }}"
+            set protocol {{ sla.protocol }}
+            set interval {{ sla.interval_ms }}
+            set recoverytime {{ sla.check_successes }}
+            set members {{ sla.sdwan_member_ids }}
+            config sla
+                edit 1
+                    set latency-threshold {{ sla.sla_latency_ms }}
+                    set jitter-threshold {{ sla.sla_jitter_ms }}
+                    set packetloss-threshold {{ sla.sla_packet_loss_percent }}
+                next
+            end
+        next
+{% endfor %}
+    end
+end
+{% endif %}

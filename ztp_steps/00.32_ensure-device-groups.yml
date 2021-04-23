@@ -1,0 +1,12 @@
+---
+
+- hosts: fortimanager
+  gather_facts: no
+  connection: httpapi
+  collections:
+    - fortinet.fortimanager
+
+  tasks:
+    - include_role:
+        name: ../roles/fortigate.ztp
+        tasks_from: add/device_groups

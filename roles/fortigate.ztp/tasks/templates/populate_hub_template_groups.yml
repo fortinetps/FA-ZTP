@@ -1,0 +1,31 @@
+---
+- import_tasks: "{{ role_path }}/tasks/get/cli_templates.yml"
+
+#- debug:
+ #   msg: "Found {{ fmgr_cli_templates.meta.response_data | length }} CLI Templates in FortiManager"
+
+#- debug: var=fmgr_cli_templates.meta.response_data
+
+# get the hub names
+- set_fact:
+    tmp_cli_template_groups: []
+
+- set_fact:
+    tmp_cli_template_groups: "{{ tmp_cli_template_groups + [ {'hub_name': item.name,
+          'cli_template_group': 'BRANCH_TO_' + item.name,
+          'members': [] } ] }}"
+  loop: "{{ ztp_hubs }}"
+
+#- debug: var=tmp_cli_template_groups
+
+# use a jinja template to create the data structures and map the cli templates
+# to their respective hubs
+- name: Generate CLI Template Group Mappings
+  set_fact:
+    cli_template_group_mappings: "{{ lookup('template', 'cli/cli_template_group_mappings.j2') }}"
+
+#- debug: var=cli_template_group_mappings
+
+- name: Update the CLI Template Group Mappings
+  import_tasks: "{{ role_path }}/tasks/set/cli_template_group_members.yml"
+

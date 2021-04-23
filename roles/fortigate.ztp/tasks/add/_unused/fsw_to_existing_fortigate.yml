@@ -1,0 +1,15 @@
+---
+- name: Add fortiswitch to fortigate
+  fortinet.fortimanager.fmgr_generic:
+    method: add
+    rc_succeeded:
+      - 0
+      - -2 # already exists
+    params:
+      - url: 'pm/config/device/TEST_FGT1/vdom/root/switch-controller/managed-switch/'
+        data:
+          switch-id: S108EN5920004803
+          fsw-wan1-peer: "fortilink"
+          name: "test_switch123"
+
+

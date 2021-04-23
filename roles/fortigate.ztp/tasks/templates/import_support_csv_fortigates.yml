@@ -1,0 +1,52 @@
+---
+- name: ensure fortigate vars directory
+  file:
+    path: "{{ role_path }}/vars/fortigates"
+    state: directory
+
+- name: Find the CSV File under the support_csv folder
+  find:
+    paths: "{{role_path}}/files/support_csv"
+    patterns: "*.csv"
+  register: find_csvs
+
+#- debug: msg={{find_csvs.files[0].path}}
+- set_fact:
+    csv_path: "{{find_csvs.files[0].path}}"
+
+- name: Consume Fortinet Support Asset CSV
+  read_csv:
+    path: "{{csv_path}}"
+  register: fortinet_asset_list
+
+#- debug: msg={{fortinet_asset_list}}
+
+- set_fact:
+    imported_fortigate_assets: []
+
+- name: Identify Fortigates from Asset List
+  set_fact:
+    imported_fortigate_assets: "{{ imported_fortigate_assets + [ item ] }}"
+  loop: "{{fortinet_asset_list.list}}"
+  when: item is search('FortiGate')
+
+#- debug: msg={{imported_fortigate_assets }}
+
+- name: Write Fortigates to Files under Vars
+  copy:
+    content: >
+      fgt_name: "{{item['Serial Number']}}"
+
+      fgt_sn: "{{item['Serial Number']}}"
+
+      fgt_ansible_template_name: "{{ default_branch_policy_package }}"
+
+      fgt_model: "{{item['Product Model']}}"
+
+      fgt_expiration: "{{item['Unit Expiration Date']}}"
+
+      fgt_registration: "{{item['Registration Date']}}"
+    dest: "{{role_path}}/vars/fortigates/{{item['Serial Number']}}.yml"
+    force: no  #don't overwrite the file we don't want to get rid of any user changes.
+  loop: "{{imported_fortigate_assets}}"
+

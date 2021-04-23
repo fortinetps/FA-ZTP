@@ -1,0 +1,19 @@
+- name: Get Unregistered FortiGates in FortiManager
+  fortinet.fortimanager.fmgr_generic:
+    method: get
+    params:
+      - url: '/dvmdb/device/'
+        filter:
+          - "mgmt_mode"
+          - "!="
+          - "unreg"
+        fields:
+          - hostname
+          - sn
+          - os_type
+          - os_ver
+          - mr
+          - patch
+  register: fmgr_fortigates
+
+#- debug: var=fmgr_fortigates

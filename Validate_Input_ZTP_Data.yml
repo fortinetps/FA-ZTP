@@ -1,0 +1,5 @@
+
+- import_playbook: ./ztp_steps/00.01_import-spreadsheet.yml
+- import_playbook: ./ztp_steps/00.10_render-fortigate-templates.yml
+- import_playbook: ./ztp_steps/00.11_validate-rendered-fortigate-templates.yml
+- import_playbook: ./ztp_steps/00.15_render-dvmdb-scripts.yml

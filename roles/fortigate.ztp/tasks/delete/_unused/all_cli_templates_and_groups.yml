@@ -1,0 +1,30 @@
+---
+- import_tasks: "{{ role_path }}/tasks/get/cli_templates.yml"
+- import_tasks: "{{ role_path }}/tasks/get/cli_template_groups.yml"
+
+#- debug: var=fmgr_cli_template_groups.meta.response_data
+#- debug: var=fmgr_cli_templates.meta.response_data
+
+- fortinet.fortimanager.fmgr_generic:
+    method: delete
+    rc_succeeded:
+      - 0
+      - -2 # already exists
+    params:
+      - url: '/pm/config/adom/{{ default_fmgr_target_adom }}/obj/cli/template-group/{{item.name}}'
+  loop: "{{ fmgr_cli_template_groups.meta.response_data }}"
+  when: 'default_fmgr_object_description_string in item.description'
+
+
+- fortinet.fortimanager.fmgr_generic:
+    method: delete
+    rc_succeeded:
+      - 0
+      - -2 # already exists
+    params:
+      - url: '/pm/config/adom/{{ default_fmgr_target_adom }}/obj/cli/template/{{item.name}}'
+  loop: '{{ fmgr_cli_templates.meta.response_data }}'
+  when: '("ztp_branch_" in item.name) and (default_fmgr_object_description_string in item.description)'
+
+
+

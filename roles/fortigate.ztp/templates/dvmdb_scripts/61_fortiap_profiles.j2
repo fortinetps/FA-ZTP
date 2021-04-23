@@ -1,0 +1,27 @@
+{% if (item.1.fap_profiles | length > 0) %}
+config wireless-controller wtp-profile
+{% for profile in item.1.fap_profiles %}
+    edit {{ profile.profile_name }}
+        set comment "Created by Ansible"
+        config platform
+            set type {{ profile.fortiap_platform | replace("FAP-","") | replace("FortiAP-", "") }}
+        end
+        set handoff-sta-thresh 30
+        config radio-1
+            set band {{ profile.radio_1_band }}
+            set channel {{ profile.radio_1_channels | join(' ')}}
+            set vap-all manual
+            set vaps {% for ssid in item.1.fap_ssids %}"{{ssid.ssid}}" {% endfor %}
+
+        end
+        config radio-2
+            set band {{ profile.radio_2_band }}
+            set channel {{ profile.radio_2_channels | join(' ')}}
+            set vap-all manual
+            set vaps {% for ssid in item.1.fap_ssids %}"{{ssid.ssid}}" {% endfor %}
+
+        end
+    next
+{% endfor %}
+end
+{% endif %}

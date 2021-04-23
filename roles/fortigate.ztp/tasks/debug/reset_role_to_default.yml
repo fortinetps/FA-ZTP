@@ -1,0 +1,25 @@
+---
+
+# clear the tmp folder
+- name: Remove tmp folder
+  file:
+    path: "{{ role_path }}/files/tmp"
+    state: absent
+
+
+# clear all files under /vars/fortigates
+- name: Remove imported Fortigates
+  file:
+    path: "{{ role_path }}/vars/fortigates"
+    state: absent
+
+
+- file:
+    path: "{{ role_path }}/files/tmp"
+    state: directory
+
+
+- file:
+    path: "{{ role_path }}/vars/fortigates"
+    state: directory
+

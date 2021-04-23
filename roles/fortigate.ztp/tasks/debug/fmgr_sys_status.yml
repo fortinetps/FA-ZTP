@@ -1,0 +1,19 @@
+- name: Get the FortiManager system status
+  fortinet.fortimanager.fmgr_generic:
+    method: get
+    params:
+      - url: '/sys/status'
+  register: sys_status
+
+- debug: var=sys_status.meta
+- debug:
+    msg: "FortiManager Responded: {{ sys_status.meta.response_message }}"
+
+- debug:
+    msg: "ADOMs are Disabled but a non-root ADOM is specified in the fortigate.ztp/defaults/main/fortimanager_settings.yml file. Check the default_fmgr_target_adom key."
+  when: sys_status.meta.response_data['Admin Domain Configuration'] == "Disabled" and default_fmgr_target_adom != "root"
+  failed_when: sys_status.meta.response_data['Admin Domain Configuration'] == "Disabled" and default_fmgr_target_adom != "root"
+
+- debug:
+    msg: "ADOMs are Disabled and the root ADOM is specified in the fortigate.ztp/defaults. OK."
+  when: sys_status.meta.response_data['Admin Domain Configuration'] == "Disabled" and default_fmgr_target_adom == "root"

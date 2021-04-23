@@ -1,0 +1,32 @@
+---
+- name: Exec dvmdb script
+  fortinet.fortimanager.fmgr_generic:
+    method: exec
+    rc_succeeded:
+      - 0
+      - -2 # already exists
+    params:
+      - url: '/dvmdb/adom/{{ item.adom }}/script/execute'
+        data:
+          script: '{{ item.name }}'
+          adom: "{{ item.adom }}"
+          scope: "{{ item.scope }}"
+  register: response
+  loop: "{{ dvmdb_scripts }}"
+
+
+- name: Wait for script task to complete
+  fortinet.fortimanager.fmgr_fact:
+    facts:
+      selector: 'task_task'
+      params: {task: '{{ item.meta.response_data.task }}'}
+  until: taskinfo.meta.response_data.percent == 100
+  loop: "{{ response.results }}"
+  retries: "{{ fmgr_task_retries  }}"
+  delay: "{{ fmgr_task_retry_delay }}"
+  failed_when: taskinfo.meta.response_data.state == "error"
+  register: taskinfo
+
+
+
+

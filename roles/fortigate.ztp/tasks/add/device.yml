@@ -1,0 +1,28 @@
+---
+
+#- debug: var=ztp_fortigates
+
+- fortinet.fortimanager.fmgr_generic:
+    method: exec
+    rc_succeeded:
+      - 0
+      - -20010 # RC for "sn already in use" -- i.e. the fortigate is already in fortimanager
+    params:
+      - url: /dvm/cmd/add/device
+        data:
+          adom: "{{ item.fmgr_target_adom }}"
+          device:
+            name: "{{ item.fgt_name }}"
+            sn: "{{ item.fgt_sn }}"
+            adm_usr: "{{ item.fgt_admin_user }}"
+            adm_pass: "{{ fgt_admin_pass }}"
+            desc: "{{ item.fmgr_object_description_string }}"
+            mgmt_mode: "{{ item.fmgr_mgmt_mode }}"
+            mr: "{{ item.fmgr_target_adom_mr | int }}"
+            os_type: fos
+            os_ver: "{{ item.fmgr_target_adom_ver | string }}"
+          flags:
+            - none
+  loop: "{{ ztp_fortigates }}"
+  ignore_errors: true
+

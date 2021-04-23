@@ -1,0 +1,8 @@
+- name: Add VDOM '{{ device_name }}:{{ partner_vdom }}' in device group '{{ partner_device_group }}'
+  fortinet.fortimanager.fmgr_generic:
+    method: add
+    params:
+      - url: /dvmdb/adom/{{ default_fmgr_target_adom }}/group/{{ partner_device_group }}/object member
+        data:
+          name: '{{ device_name }}'
+          vdom: '{{ partner_vdom }}'

@@ -1,0 +1,37 @@
+---
+- set_fact:
+    template_meta_dict: {}
+  delegate_to: localhost
+
+- name: make template dictionary we can copy all fortigate settings to
+  set_fact:
+    template_meta_dict: "{{ template_meta_dict | combine( { item: None } ) }}"
+  loop: "{{ device_metafields }}"
+  delegate_to: localhost
+
+- name: add template metadata dict to each ztp fortigate
+  set_fact:
+    ztp_fortigates_meta: |
+      {% set res = [] -%}
+      {% for fgt in ztp_fortigates -%}
+        {% set fgt_meta_dict = {} -%}
+        {% for key, value in fgt.items() -%}
+          {% if key in template_meta_dict.keys() %}{% set x=fgt_meta_dict.__setitem__(key, value) %}{% endif -%}
+        {% endfor -%}
+      {% set x = res.extend( [ {'device': fgt.fgt_name, 'adom': fgt.fmgr_target_adom, 'metafields': fgt_meta_dict} ] ) -%}
+      {% endfor -%}
+      {{ res }}
+  delegate_to: localhost
+
+- debug: var=ztp_fortigates_meta
+
+- name: Update meta field per device
+  fortinet.fortimanager.fmgr_dvmdb_device:
+    adom: "{{ item.adom }}"
+    device: "{{ item.device }}"
+    dvmdb_device:
+      'meta fields': "{{ item.metafields }}"
+  loop: "{{ ztp_fortigates_meta }}"
+
+
+

@@ -1,0 +1,16 @@
+---
+
+- hosts: fortimanager
+  gather_facts: no
+  connection: httpapi
+  collections:
+    - fortinet.fortimanager
+  tasks:
+
+    - include_role:
+        name: ../roles/fortigate.ztp
+        tasks_from: debug/fmgr_sys_status
+
+#    - include_role:
+#        name: ../roles/fortigate.ztp
+#        tasks_from: get/role_default_adom

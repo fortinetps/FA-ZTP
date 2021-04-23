@@ -1,0 +1,71 @@
+---
+- hosts: localhost
+  collections:
+    - fortinet.fortimanager
+  tasks:
+
+    - include_role:
+        name: ../roles/fortigate.ztp
+        tasks_from: templates/read_rendered_fortigates
+
+
+- hosts: fortimanager
+  gather_facts: no
+  connection: httpapi
+  collections:
+    - fortinet.fortimanager
+
+  tasks:
+    - include_role:
+        name: ../roles/fortigate.ztp
+        tasks_from: add/secprof_antivirus
+      vars:
+        ztp_fortigates: "{{ hostvars['localhost']['ztp_fortigates'] }}"
+
+    - include_role:
+        name: ../roles/fortigate.ztp
+        tasks_from: add/secprof_appcontrol
+      vars:
+        ztp_fortigates: "{{ hostvars['localhost']['ztp_fortigates'] }}"
+
+    - include_role:
+        name: ../roles/fortigate.ztp
+        tasks_from: add/secprof_dns_filter
+      vars:
+        ztp_fortigates: "{{ hostvars['localhost']['ztp_fortigates'] }}"
+
+    - include_role:
+        name: ../roles/fortigate.ztp
+        tasks_from: add/secprof_file_filter
+      vars:
+        ztp_fortigates: "{{ hostvars['localhost']['ztp_fortigates'] }}"
+
+    - include_role:
+        name: ../roles/fortigate.ztp
+        tasks_from: add/secprof_ips
+      vars:
+        ztp_fortigates: "{{ hostvars['localhost']['ztp_fortigates'] }}"
+
+    - include_role:
+        name: ../roles/fortigate.ztp
+        tasks_from: add/secprof_ssl_inspection
+      vars:
+        ztp_fortigates: "{{ hostvars['localhost']['ztp_fortigates'] }}"
+
+    - include_role:
+        name: ../roles/fortigate.ztp
+        tasks_from: add/secprof_voip
+      vars:
+        ztp_fortigates: "{{ hostvars['localhost']['ztp_fortigates'] }}"
+
+    - include_role:
+        name: ../roles/fortigate.ztp
+        tasks_from: add/secprof_web_filter
+      vars:
+        ztp_fortigates: "{{ hostvars['localhost']['ztp_fortigates'] }}"
+
+
+
+
+
+

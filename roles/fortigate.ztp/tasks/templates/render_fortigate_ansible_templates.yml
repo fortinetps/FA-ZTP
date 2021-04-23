@@ -1,0 +1,36 @@
+---
+
+# get all the files for each fortigate
+- name: Find the fortigate definition files
+  find:
+    paths: "{{role_path}}/vars/fortigates/"
+    patterns: "*.yml,*.yaml"
+  register: imported_fgt_files
+
+- name: read imported fortigate files
+  set_fact:
+    ztp_input_fortigates: "{{ ztp_input_fortigates + [ lookup('file', item.path, convert_data=True) | from_yaml] }}"
+  loop: "{{ imported_fgt_files.files|flatten(levels=1) }}"
+  loop_control:
+    label: "{{ item.path }}"
+
+- debug: var=ztp_input_fortigates
+
+- name: ensure fortigate temp directory
+  file:
+    path: "{{ role_path }}/files/tmp/fortigates"
+    state: directory
+
+#- name: Render defined ZTP Fortigates using their respective template names
+#  template:
+#    src: "{{ role_path }}/templates/fortigates/{{ item.fgt_ansible_template_name | lower }}.j2"
+#    dest: "{{ role_path }}/files/tmp/fortigates/{{ item.fgt_name }}.yml"
+#  loop: "{{ ztp_input_fortigates }}"
+#  ignore_errors: yes
+- name: Render defined ZTP Fortigates
+  template:
+    src: "{{ role_path }}/templates/fortigates/spreadsheet_fgt_merge.j2"
+    dest: "{{ role_path }}/files/tmp/fortigates/{{ item.fgt_name }}.yml"
+  loop: "{{ ztp_input_fortigates }}"
+  ignore_errors: yes
+

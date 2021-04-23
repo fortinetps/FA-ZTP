@@ -1,0 +1,14 @@
+- name: Add fortiswitch vlan for fap management
+  fortinet.fortimanager.fmgr_generic:
+    method: add
+    params:
+      - url: '/pm/config/adom/{{ default_fmgr_target_adom }}/obj/fsp/vlan'
+        data:
+          name: '{{ item.name }}'
+          vlanid: '{{ item.vlanid }}'
+          interface:
+            allowaccess: '{{ item.allowaccess }}'
+            description: '{{ fmgr_object_description_string }}'
+          color: '{{ item.color }}'
+
+  loop: '{{ fsw_vlans }}'

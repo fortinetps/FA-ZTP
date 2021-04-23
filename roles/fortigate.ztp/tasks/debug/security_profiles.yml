@@ -1,0 +1,6 @@
+---
+
+- set_fact:
+    policy_security_profiles: "{{ lookup('template', 'policy_packages/get_security_profiles.j2') }}"
+
+- debug: var=policy_security_profiles

@@ -1,0 +1,25 @@
+- fortinet.fortimanager.fmgr_generic:
+    method: exec
+    params:
+      - url: /securityconsole/install/device
+        data:
+          adom: '{{ item.fmgr_target_adom }}'
+          flags:
+            - none
+          scope:
+            - name: '{{ item.fgt_name }}'
+              vdom: "{{ item.fgt_vdom }}"
+  register: response
+  loop: "{{ ztp_fortigates }}"
+
+- name: Wait for device installation task to complete
+  fortinet.fortimanager.fmgr_fact:
+    facts:
+      selector: 'task_task'
+      params: {task: '{{ item.meta.response_data.task }}'}
+  loop: "{{ response.results }}"
+  until: taskinfo.meta.response_data.percent == 100
+  retries: "{{ fmgr_task_retries  }}"
+  delay: "{{ fmgr_task_retry_delay }}"
+  failed_when: taskinfo.meta.response_data.state == "error"
+  register: taskinfo

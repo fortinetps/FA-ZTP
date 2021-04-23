@@ -1,0 +1,31 @@
+- name: Get policy packages
+  fortinet.fortimanager.fmgr_generic:
+    method: get
+    rc_succeeded:
+      - 0
+      - -2 # already exists
+    params:
+      - url: '/pm/pkg/adom/{{ item.0.fmgr_target_adom }}/{{ item.1.policy_package }}'
+  loop: "{{ ztp_fortigates | subelements('policy_packages')}}"
+  register: existing_policy_packages_adom
+  when: (item.1.global | lower) != 'yes'
+
+#- debug: var=existing_policy_packages.results
+
+- name: Add GLOBAL policy packages
+  fortinet.fortimanager.fmgr_generic:
+    method: get
+    rc_succeeded:
+      - 0
+      - -2 # already exists
+    params:
+      - url: '/pm/pkg/global'
+        data:
+          name: '{{ item.1.policy_package }}'
+#          type: pkg
+  loop: "{{ ztp_fortigates | subelements('policy_packages')}}"
+  register: existing_policy_packages_global
+  when: (item.1.global | lower) != 'yes'
+
+- debug: var=existing_policy_packages_adom.results
+- debug: var=existing_policy_packages_global.results

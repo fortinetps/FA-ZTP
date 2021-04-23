@@ -1,0 +1,25 @@
+config system interface
+    edit $(fgt_guest_port)
+        set vdom root
+        set vlanid 88
+        set interface $(fgt_lan_port)
+        set ip $(fgt_guest_ip) $(fgt_guest_netmask_bits_long)
+        set alias "GUEST"
+        set allowaccess ping
+
+    next
+end
+config system dhcp server
+    edit 1001
+        set dns-service default
+        set default-gateway $(fgt_guest_ip)
+        set netmask $(fgt_guest_netmask_bits_long)
+        set interface $(fgt_guest_port)
+        config ip-range
+            edit 1
+                set start-ip $(fgt_guest_dhcp_start_ip)
+                set end-ip $(fgt_guest_dhcp_end_ip)
+            next
+        end
+    next
+end

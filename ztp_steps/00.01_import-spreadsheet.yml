@@ -1,0 +1,14 @@
+- hosts: localhost
+  collections:
+    - fortinet.fortimanager
+  tasks:
+
+    - include_role:
+        name: ../roles/fortigate.ztp
+        tasks_from: templates/import_spreadsheet
+      vars:
+#        spreadsheet_path: "{{ role_path }}/files/spreadsheets/Ansible_ZTP_Local_Simple_Topology.xlsx"
+#        spreadsheet_path: "{{ role_path }}/files/spreadsheets/Ansible_ZTP_Local_Simple_Topology_ADOM.xlsx"
+        spreadsheet_path: "{{ role_path }}/files/spreadsheets/Evoke_SDWAN_Demo.xlsx"
+#        spreadsheet_path: "{{ role_path }}/files/spreadsheets/Evoke_Ansible_ZTP_v1.14.xlsx"
+

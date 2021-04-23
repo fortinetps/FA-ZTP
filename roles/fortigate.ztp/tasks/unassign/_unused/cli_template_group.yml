@@ -1,0 +1,13 @@
+---
+
+- fortinet.fortimanager.fmgr_generic:
+    method: delete
+    params:
+      - url: "/pm/config/adom/{{ item.fmgr_target_adom }}/obj/cli/template-group/{{ item.fmgr_cli_template_group }}/scope member"
+        data:
+          - name: '{{ item.fgt_name }}'
+            vdom: "{{ item.fgt_vdom }}"
+  loop: "{{ ztp_fortigates }}"
+  ignore_errors: yes
+
+

@@ -1,0 +1,9 @@
+- hosts: fortimanager
+  connection: httpapi
+  collections:
+    - fortinet.fortimanager
+  tasks:
+
+    - include_role:
+        name: ../roles/fortigate.ztp
+        tasks_from: debug/show_role_device_inventory

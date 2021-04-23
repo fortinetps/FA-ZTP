@@ -1,0 +1,30 @@
+- name: Install policy packages
+  fortinet.fortimanager.fmgr_generic:
+    method: exec
+    params:
+      - url: /securityconsole/install/package
+        data:
+          adom: '{{ item.0.fmgr_target_adom }}'
+          flags:
+            - none
+          pkg: '{{ item.1.policy_package }}'
+          scope:
+            - name: '{{ item.0.fgt_name }}'
+              vdom: "{{ item.0.fgt_vdom }}"
+  register: response
+  loop: "{{ ztp_fortigates | subelements('policy_packages') }}"
+
+
+- name: Wait for policy package task to complete
+  fortinet.fortimanager.fmgr_fact:
+    facts:
+      selector: 'task_task'
+      params: {task: '{{ item.meta.response_data.task }}'}
+  loop: "{{ response.results }}"
+  when: 'item.changed != False'
+  until: taskinfo.meta.response_data.percent == 100
+  retries: "{{ fmgr_task_retries  }}"
+  delay: "{{ fmgr_task_retry_delay }}"
+  failed_when: taskinfo.meta.response_data.state == "error"
+  register: taskinfo
+

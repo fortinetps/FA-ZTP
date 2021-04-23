@@ -1,0 +1,54 @@
+---
+- name: Ensure pip install netcalc
+  shell: pip3 install netcalc
+  delegate_to: localhost
+
+- name: make the branch top level cidr split tmp directory
+  file:
+    path: "{{ role_path }}/files/tmp/branch_cidr_pool/"
+    state: directory
+
+
+- name: Split the branch top level cidr block '{{ branch_top_level_cidr_block }}' into netmask bits "{{ branch_netmask_bits }}"
+  shell: "netcalc split {{ branch_top_level_cidr_block }} {{ branch_netmask_bits }}"
+  register: branch_top_level_cidr_split
+  delegate_to: localhost
+
+
+- name: split up each top level branch according to the desired settings
+  command: "netcalc split {{ item }} {{ branch_internal_split_bits }}"
+  register: branch_internal_cidr_split
+  loop: "{{ branch_top_level_cidr_split.stdout_lines }}"
+  delegate_to: localhost
+
+- set_fact:
+    tmp_branch_cidr: []
+    delegate_to: localhost
+
+
+- set_fact:
+    tmp_branch_cidr: "{{ tmp_branch_cidr + [{'top_level_cidr': item.item, 'inside_cidr_list': item.stdout }] }}"
+  loop: "{{ branch_internal_cidr_split.results }}"
+  delegate_to: localhost
+
+#- debug: var=tmp_branch_cidr
+
+- name: run vlan assignments
+  command: "python3 {{ role_path }}/files/python/branch_top_level_cidr_to_vlans.py {{ item.top_level_cidr }} {{ item.inside_cidr_list | replace('\n',',') }} {{ branch_inside_vlan_pool_start }}"
+  loop: "{{ tmp_branch_cidr }}"
+  register: vlan_assignments
+  delegate_to: localhost
+
+- set_fact:
+    branch_cidr: []
+
+- set_fact:
+    branch_cidr: "{{ branch_cidr + [ (item.stdout | from_json ) ] }}"
+  loop: "{{ vlan_assignments.results }}"
+
+- name: write top-level branch cidr split to tmp file
+  copy:
+    content: "{{ item  | to_nice_yaml }}"
+    dest: "{{ role_path }}/files/tmp/branch_cidr_pool/{{ item.parent_cidr | replace('/','_') }}.yaml"
+    force: yes # overwrite existing files!
+  loop: "{{ branch_cidr }}"

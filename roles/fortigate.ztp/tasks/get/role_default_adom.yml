@@ -1,0 +1,17 @@
+- name: Get ADOM '{{ default_fmgr_target_adom }}'
+  fortinet.fortimanager.fmgr_generic:
+    method: get
+    rc_succeeded:
+      - 0
+    params:
+      - url: /dvmdb/adom
+        filter:
+          - "name"
+          - "=="
+          - "{{ default_fmgr_target_adom }}"
+  register: adom_results
+
+
+- debug:
+    msg: "There are {{ adom_results.meta.response_data | length }} ADOMs that match the default ADOM defined: {{ default_fmgr_target_adom }}"
+  failed_when: adom_results.meta.response_data | length == 0

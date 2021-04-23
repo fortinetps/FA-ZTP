@@ -1,0 +1,15 @@
+- name: Add cli scripts in device db
+  fortinet.fortimanager.fmgr_generic:
+    method: add
+    params:
+      - url: '/dvmdb/adom/{{ default_fmgr_target_adom }}/script'
+        data:
+          name: '{{ item | basename() }}'
+          content: '{{ lookup("file", item) }}'
+          desc: '{{ fmgr_object_description_string }}'
+          target: device_database
+          type: cli
+
+  loop: '{{ cli_scripts_devicedb.split(",") }}'
+
+

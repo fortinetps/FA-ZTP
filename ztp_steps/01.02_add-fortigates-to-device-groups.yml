@@ -1,0 +1,29 @@
+---
+- hosts: localhost
+  collections:
+    - fortinet.fortimanager
+  tasks:
+
+    - include_role:
+        name: ../roles/fortigate.ztp
+        tasks_from: templates/read_rendered_fortigates
+
+
+- hosts: fortimanager
+  connection: httpapi
+  gather_facts: no
+  collections:
+    - fortinet.fortimanager
+
+  tasks:
+    - include_role:
+        name: ../roles/fortigate.ztp
+        tasks_from: add/device_groups
+      vars:
+        ztp_fortigates: "{{ hostvars['localhost']['ztp_fortigates'] }}"
+
+    - include_role:
+        name: ../roles/fortigate.ztp
+        tasks_from: assign/device_group
+      vars:
+        ztp_fortigates: "{{ hostvars['localhost']['ztp_fortigates'] }}"

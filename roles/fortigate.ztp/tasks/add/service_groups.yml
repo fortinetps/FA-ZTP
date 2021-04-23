@@ -1,0 +1,88 @@
+---
+- set_fact:
+    service_groups: []
+
+- set_fact:
+    service_objects: []
+
+- set_fact:
+    tcp_services: []
+
+- set_fact:
+    udp_services: []
+
+- set_fact:
+    tcp_service_ranges: []
+
+- set_fact:
+    udp_services_ranges: []
+
+- set_fact:
+    service_groups: "{{ service_groups +  item.service_groups  }}"
+  loop: "{{ ztp_fortigates }}"
+
+- debug: var=service_groups
+
+- set_fact:
+    service_objects: "{{ service_objects + [{'adom': item.adom, 'ports': item.ports, 'name': item.name }] }}"
+  loop: "{{ service_groups  }}"
+
+- set_fact:
+    flattened_service_objects: "{{ service_objects | flatten(levels=1) | unique }}"
+
+- debug: var=flattened_service_objects
+
+# RENDER / FORMAT
+- set_fact:
+    formatted_services: "{{ lookup('template', 'services/service_object_formatter.j2') }}"
+
+#- debug: var=formatted_services
+- set_fact:
+    flattened_service_groups: "{{ service_groups | json_query('[].{name: name, ports: ports, adom: adom}') | unique }}"
+
+#- debug: var=formatted_services
+- debug: var=flattened_service_groups
+
+- name: Add TCP service objects for groups
+  fortinet.fortimanager.fmgr_generic:
+    method: add
+    rc_succeeded:
+      - 0
+      - -2 # already exists
+    params:
+      - url: '/pm/config/adom/{{ item.adom }}/obj/firewall/service/custom'
+        data:
+          name: "{{ item.name }}"
+          comment: "{{ default_fmgr_object_description_string }}"
+          tcp-portrange: "{{ item.tcp_portrange }}"
+  loop: "{{ formatted_services }}"
+  when: item.type == 'tcp'
+
+- name: Add UDP service objects for groups
+  fortinet.fortimanager.fmgr_generic:
+    method: add
+    rc_succeeded:
+      - 0
+      - -2 # already exists
+    params:
+      - url: '/pm/config/adom/{{ item.adom }}/obj/firewall/service/custom'
+        data:
+          name: "{{ item.name }}"
+          comment: "{{ default_fmgr_object_description_string }}"
+          udp-portrange: "{{ item.udp_portrange }}"
+  loop: "{{ formatted_services }}"
+  when: item.type == 'udp'
+
+- name: Add service Groups
+  fortinet.fortimanager.fmgr_generic:
+    method: add
+    rc_succeeded:
+      - 0
+      - -2 # already exists
+    params:
+      - url: '/pm/config/adom/{{ item.adom }}/obj/firewall/service/group'
+        data:
+          name: "{{ item.name }}"
+          comment: "{{ default_fmgr_object_description_string }}"
+          member: "{{ item.ports }}"
+  loop: "{{ flattened_service_groups }}"

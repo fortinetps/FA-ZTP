@@ -1,0 +1,10 @@
+- name: Get cli template groups
+  fortinet.fortimanager.fmgr_generic:
+    method: get
+    rc_succeeded:
+      - 0
+      - -2 # already exists
+    params:
+      - url: '/pm/config/adom/{{ default_fmgr_target_adom }}/obj/cli/template-group'
+  register: fmgr_cli_template_groups
+

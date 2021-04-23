@@ -1,0 +1,11 @@
+- name: Add model fortiswitch '{{ fsw_name }}:{{ fsw_sn }}' to model device '{{ device_name }}:{{ device_sn }}'
+  fortinet.fortimanager.fmgr_generic:
+    method: add
+    params:
+      - url: /pm/config/device/{{ device_name }}/vdom/root/switch-controller/managed-switch
+        data:
+          name: '{{ fsw_name }}'
+          switch-id: '{{ fsw_sn }}'
+        push: 1
+
+  ignore_errors: true

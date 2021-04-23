@@ -1,0 +1,5 @@
+- debug: var=ansible_facts
+#- debug: var=Address_Objects
+#- debug: var=fmgr_task_retries
+
+

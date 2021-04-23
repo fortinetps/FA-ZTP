@@ -1,0 +1,18 @@
+---
+
+- name: Find the jinja cli templates
+  find:
+    paths: "{{role_path}}/templates/cli/static/"
+    patterns: "ztp_*.j2"
+  register: jinja_cli_templates
+
+- name: ensure cli temp directory
+  file:
+    path: "{{ role_path }}/files/tmp/static_cli_templates"
+    state: directory
+
+- name: Render CLI Templates
+  template:
+    src: "{{ item.path }}"
+    dest: "{{ role_path }}/files/tmp/static_cli_templates/{{ item.path | basename | replace('.j2','.conf') }}"
+  with_items: "{{ jinja_cli_templates.files }}"

@@ -1,0 +1,41 @@
+config router route-map
+    {% if item.wan1_vpn_bgp_neighbor != "None" -%}
+    edit "{{ item.name }}_WAN1"
+        config rule
+            edit 1
+                set set-community "{{ item.wan1_vpn_bgp_community_as }}"
+                unset set-ip-nexthop
+                unset set-ip6-nexthop
+                unset set-ip6-nexthop-local
+                unset set-originator-id
+            next
+        end
+    next{% endif %}
+
+    {% if item.wan2_vpn_bgp_neighbor != "None" -%}
+    edit "{{ item.name }}_WAN2"
+        config rule
+            edit 1
+                set set-community "{{ item.wan2_vpn_bgp_community_as }}"
+                unset set-ip-nexthop
+                unset set-ip6-nexthop
+                unset set-ip6-nexthop-local
+                unset set-originator-id
+            next
+        end
+    next{% endif %}
+
+    {% if item.wan3_vpn_bgp_neighbor != "None" -%}
+    edit "{{ item.name }}_WAN3"
+        config rule
+            edit 1
+                set set-community "{{ item.wan3_vpn_bgp_community_as }}"
+                unset set-ip-nexthop
+                unset set-ip6-nexthop
+                unset set-ip6-nexthop-local
+                unset set-originator-id
+            next
+        end
+    next{% endif %}
+
+end

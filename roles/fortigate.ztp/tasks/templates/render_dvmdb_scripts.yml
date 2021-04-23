@@ -1,0 +1,45 @@
+---
+
+- name: Find the dvmdb templates
+  find:
+    paths: "{{role_path}}/templates/dvmdb_scripts/"
+    patterns: "*.j2"
+  register: jinja_dvmdb_templates
+
+- name: ensure temp directory
+  file:
+    path: "{{ role_path }}/files/tmp/dvmdb_scripts"
+    state: directory
+
+- set_fact:
+    dvmdb_scripts: []
+
+
+- set_fact:
+    dvmdb_scripts: "{{ dvmdb_scripts + [{
+        'content': lookup('template', item.0.path),
+        'target': 'device_database',
+        'desc': item.1.fmgr_object_description_string,
+        'type': 'cli',
+        'name': item.1.fgt_name + '_' + (item.0.path | basename | replace('.j2','')),
+        'scope': [{'name': item.1.fgt_name, 'vdom': item.1.fgt_vdom}],
+        'adom': item.1.fmgr_target_adom
+        }] }}"
+  loop: "{{ jinja_dvmdb_templates.files | product(ztp_fortigates) | list}}"
+
+- debug: var=dvmdb_scripts
+
+- set_fact:
+    trimmed_dvmdb_scripts: []
+
+- set_fact:
+    trimmed_dvmdb_scripts: "{{ trimmed_dvmdb_scripts + [ item ] }}"
+  loop: "{{ dvmdb_scripts }}"
+  when: item.content != '' and not item.content | regex_search("(^config.*\s+end\s+$)") and not item.content | regex_search("(^\s+$)")
+
+- copy:
+    content: "{{ trimmed_dvmdb_scripts  | to_nice_yaml( width=50, explicit_start=True, explicit_end=True) }}"
+    dest: "{{ role_path }}/files/tmp/dvmdb_scripts/rendered_dvmdb_scripts.yml"
+
+
+

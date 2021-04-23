@@ -1,0 +1,13 @@
+- name: Get policy packages
+  fortinet.fortimanager.fmgr_generic:
+    method: get
+    rc_succeeded:
+      - 0
+      - -2 # already exists
+    params:
+      - url: '/pm/config/adom/{{ item.0.fmgr_target_adom }}/pkg/{{ item.1.policy_package }}/firewall/policy'
+  loop: "{{ ztp_fortigates | subelements('policy_packages')}}"
+  register: existing_policy_package_rules
+
+- debug: var=existing_policy_package_rules.results
+

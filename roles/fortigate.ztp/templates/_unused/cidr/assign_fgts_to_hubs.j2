@@ -1,0 +1,14 @@
+{%- set ztp_hub_assignments  = [] -%}
+{%- for fgt in ztp_fortigates_with_cidr -%}
+    {%- set fgt_hub_list = [] -%}
+    {%- for hub in ztp_hubs -%}
+        {%- for supernet in hub['branch_cidr_supernets'] -%}
+        {%- set branch_assigned_to_hub = supernet | network_in_usable(fgt['fgt_lan_ip']) -%}
+        {%- if branch_assigned_to_hub == True -%}
+          {{ fgt_hub_list.append(hub) }}
+        {%- endif -%}
+        {%- endfor -%}
+    {%- endfor -%}
+{{ fgt.update({'vpn_hubs': fgt_hub_list}) }}
+{%- endfor -%}
+{{ ztp_fortigates_with_cidr }}

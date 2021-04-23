@@ -1,0 +1,12 @@
+- name: Assign SD-WAN templates
+  fortinet.fortimanager.fmgr_generic:
+    method: delete
+    rc_succeeded:
+      - 0
+      # - -2 # already exists
+    params:
+      - url: "/pm/wanprof/adom/{{ item.fmgr_target_adom }}/{{ item.fmgr_sdwan_template }}/scope member"
+        data:
+          - name: '{{ item.fgt_name }}'
+            vdom: "{{ item.fgt_vdom }}"
+  loop: "{{ ztp_fortigates }}"

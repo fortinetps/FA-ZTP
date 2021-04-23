@@ -1,0 +1,12 @@
+- name: Add device metafields
+  fortinet.fortimanager.fmgr_generic:
+    method: delete
+    params:
+      - url: /dvmdb/_meta_fields/device
+        data:
+          name: '{{ item }}'
+    rc_succeeded:
+      - 0
+      - -8      
+
+  loop: '{{ device_metafields }}'

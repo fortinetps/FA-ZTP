@@ -1,0 +1,16 @@
+- set_fact:
+    global_package_assignments: "{{ lookup('template', 'policy_packages/get_global_policy_package_assignments.j2') }}"
+
+#- debug: var=global_package_assignments
+
+- name: Assign Global Packages to ADOMs
+  fortinet.fortimanager.fmgr_generic:
+    method: exec
+    rc_succeeded:
+      - 0
+     # - -2 # already exists
+    params:
+      - url: '/securityconsole/assign/package'
+        data: "{{ item }}"
+  loop: "{{ global_package_assignments }}"
+  register: global_assignment_tasks

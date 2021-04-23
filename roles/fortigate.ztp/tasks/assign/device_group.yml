@@ -1,0 +1,10 @@
+- name: Add device to device group
+  fortinet.fortimanager.fmgr_generic:
+    method: add
+    params:
+      - url: "/dvmdb/adom/{{ item.fmgr_target_adom }}/group/{{ item.fmgr_target_device_group }}/object member"
+        data:
+          name: '{{ item.fgt_name }}'
+          vdom: "{{ item.fgt_vdom }}"
+  loop: "{{ ztp_fortigates }}"
+  ignore_errors: yes

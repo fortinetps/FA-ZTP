@@ -1,0 +1,21 @@
+---
+
+- name: Find the rendered fortigate definition files
+  find:
+    paths: "{{role_path}}/files/tmp/fortigates/"
+    patterns: "*.yml,*.yaml"
+  register: rendered_fgt_files
+
+#- debug: var=rendered_fgt_files
+- set_fact:
+    ztp_fortigates: []
+
+- name: read rendered fortigate files
+  set_fact:
+    ztp_fortigates: "{{ ztp_fortigates + (lookup('file', item.path, convert_data=True) | from_yaml) }}"
+  loop: "{{ rendered_fgt_files.files|flatten(levels=1) }}"
+  loop_control:
+    label: "{{ item.path }}"
+
+
+

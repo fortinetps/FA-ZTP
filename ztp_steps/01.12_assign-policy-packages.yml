@@ -1,0 +1,21 @@
+---
+- hosts: localhost
+  collections:
+    - fortinet.fortimanager
+  tasks:
+
+    - include_role:
+        name: ../roles/fortigate.ztp
+        tasks_from: templates/read_rendered_fortigates.yml
+
+- hosts: fortimanager
+  connection: httpapi
+  gather_facts: no
+  collections:
+    - fortinet.fortimanager
+  tasks:
+    - include_role:
+        name: ../roles/fortigate.ztp
+        tasks_from: assign/policy_package
+      vars:
+        ztp_fortigates: "{{ hostvars['localhost']['ztp_fortigates'] }}"

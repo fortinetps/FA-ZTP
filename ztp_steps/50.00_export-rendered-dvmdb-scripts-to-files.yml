@@ -1,0 +1,13 @@
+---
+- hosts: localhost
+  collections:
+    - fortinet.fortimanager
+  tasks:
+
+    - include_role:
+        name: ../roles/fortigate.ztp
+        tasks_from: templates/read_rendered_fortigates
+
+    - include_role:
+        name: ../roles/fortigate.ztp
+        tasks_from: debug/export_rendered_dvmdb_scripts_to_tmp_folder

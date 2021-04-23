@@ -1,0 +1,14 @@
+{% if item.fgt_device_model is not defined %}{% set x=item.__setitem__('fgt_device_model', default_fgt_device_model) %}{% endif %}
+{% if item.fgt_admin_user is not defined %}{% set x=item.__setitem__('fgt_admin_user', default_fgt_admin_user) %}{% endif %}
+{% if item.fgt_faz_target_ip is not defined %}{% set x=item.__setitem__('fgt_faz_target_ip', default_fgt_faz_target_ip) %}{% endif %}
+{% if item.fgt_vdom is not defined %}{% set x=item.__setitem__('fgt_vdom', default_fgt_vdom) %}{% endif %}
+{% if item.fmgr_mgmt_mode is not defined %}{% set x=item.__setitem__('fmgr_mgmt_mode', default_fmgr_mgmt_mode) %}{% endif %}
+{% if item.fgt_address_object_prefix is not defined %}{% set x=item.__setitem__('fgt_address_object_prefix', default_fgt_address_object_prefix) %}{% endif %}
+{% if item.fmgr_target_adom is not defined %}{% set x=item.__setitem__('fmgr_target_adom', default_fmgr_target_adom) %}{% endif %}
+{% if item.fmgr_target_adom_ver is not defined %}{% set x=item.__setitem__('fmgr_target_adom_ver', default_fmgr_target_adom_ver) %}{% endif %}
+{% if item.fmgr_target_adom_mr is not defined %}{% set x=item.__setitem__('fmgr_target_adom_mr', default_fmgr_target_adom_mr) %}{% endif %}
+{% if item.fmgr_object_description_string is not defined %}{% set x=item.__setitem__('fmgr_object_description_string', default_fmgr_object_description_string) %}{% endif %}
+{% if item.fmgr_target_device_group is not defined %}{% set x=item.__setitem__('fmgr_target_device_group', default_device_group) %}{% endif %}
+{%- set item_list = [] -%}
+{{- item_list.append(item) -}}
+{{ item_list | to_nice_yaml }}

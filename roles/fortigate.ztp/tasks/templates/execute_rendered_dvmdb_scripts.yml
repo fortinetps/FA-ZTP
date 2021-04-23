@@ -1,0 +1,21 @@
+---
+
+- set_fact:
+    dvmdb_scripts_path: "{{ role_path }}/files/tmp/dvmdb_scripts/rendered_dvmdb_scripts.yml"
+
+- set_fact:
+    dvmdb_scripts_temp: "{{ lookup('file', dvmdb_scripts_path) | from_yaml }}"
+  delegate_to: localhost
+
+#- debug: var=dvmdb_scripts_temp
+
+- set_fact:
+    dvmdb_scripts: "{{ dvmdb_scripts_temp | sort(attribute='name') | list }}"
+
+#- debug: var=dvmdb_scripts
+
+#- import_tasks: "{{ role_path }}/tasks/set/dvmdb_script.yml"
+- import_tasks: "{{ role_path }}/tasks/execute/dvmdb_script.yml"
+#- import_tasks: "{{ role_path }}/tasks/delete/dvmdb_script.yml"
+
+

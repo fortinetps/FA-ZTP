@@ -1,0 +1,61 @@
+{%- set security_profiles = {} -%}
+{%- set adoms = [] -%}
+
+{%- for fgt in ztp_fortigates -%}
+    {%- if fgt.fmgr_target_adom not in adoms -%}
+        {{ adoms.append(fgt.fmgr_target_adom) }}
+    {%- endif -%}
+{%- endfor -%}
+{%- for adom in adoms -%}
+    {%- set append_dict = {'adom': adom,
+            'antivirus': [],
+            'appcontrol': [],
+            'dns_filter': [],
+            'file_filter': [],
+            'ips': [],
+            'ssl_inspection': [],
+            'voip': [],
+            'web_filter': [],
+            } -%}
+    {%- set x=security_profiles.__setitem__(adom, append_dict) -%}
+{%- endfor -%}
+
+{%- for adom, profiles in security_profiles.items() -%}
+    {%- for fgt in ztp_fortigates -%}
+        {%- if fgt.fmgr_target_adom == adom -%}
+            {%- for pkg in fgt.policy_packages -%}
+                {%- for policy in pkg.policies -%}
+                     {%- if policy.antivirus and policy.antivirus not in profiles.antivirus-%}
+                        {{ profiles.antivirus.append(policy.antivirus) }}
+                    {%- endif -%}
+                    {%- if policy.appcontrol and policy.appcontrol not in profiles.appcontrol-%}
+                        {{ profiles.appcontrol.append(policy.appcontrol) }}
+                    {%- endif -%}
+                    {%- if policy.dns_filter and policy.dns_filter not in profiles.dns_filter-%}
+                        {{ profiles.dns_filter.append(policy.dns_filter) }}
+                    {%- endif -%}
+                    {%- if policy.file_filter and policy.file_filter not in profiles.file_filter-%}
+                        {{ profiles.file_filter.append(policy.file_filter) }}
+                    {%- endif -%}
+                    {%- if policy.ips and policy.ips not in profiles.ips-%}
+                        {{ profiles.ips.append(policy.ips) }}
+                    {%- endif -%}
+                    {%- if policy.ssl_inspection and policy.ssl_inspection not in profiles.ssl_inspection-%}
+                        {{ profiles.ssl_inspection.append(policy.ssl_inspection) }}
+                    {%- endif -%}
+                    {%- if policy.voip and policy.voip not in profiles.voip-%}
+                        {{ profiles.voip.append(policy.voip) }}
+                    {%- endif -%}
+                    {%- if policy.web_filter and policy.web_filter not in profiles.web_filter-%}
+                        {{ profiles.web_filter.append(policy.web_filter) }}
+                    {%- endif -%}
+                {%- endfor -%}
+            {%- endfor -%}
+        {%- endif -%}
+    {%- endfor -%}
+{%- endfor -%}
+{%- set ret_list = [] -%}
+{%- for adom, profiles in security_profiles.items() -%}
+    {{ ret_list.append(profiles) }}
+{%- endfor -%}
+{{ ret_list | to_json }}

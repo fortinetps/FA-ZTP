@@ -1,0 +1,26 @@
+---
+- set_fact:
+    all_device_groups: []
+
+- name: Identify distinct groups to add
+  set_fact:
+    all_device_groups: "{{ all_device_groups + [ {'name': (item.fmgr_target_device_group), 'adom': (item.fmgr_target_adom) } ] }}"
+  with_items: "{{ ztp_fortigates }}"
+
+- set_fact:
+    distinct_device_groups: "{{ all_device_groups | unique }}"
+
+- fortinet.fortimanager.fmgr_generic:
+    method: add
+    rc_succeeded:
+      - 0
+      - -2 # already exists
+    params:
+      - url: '/dvmdb/adom/{{ item.adom }}/group'
+        data:
+          desc: '{{ default_fmgr_object_description_string }}'
+          name: '{{ item.name }}'
+          os_type: fos
+          type: normal
+  loop: "{{ distinct_device_groups }}"
+  ignore_errors: yes

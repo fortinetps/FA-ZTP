@@ -1,0 +1,12 @@
+- name: Assign fortiap template
+  fortinet.fortimanager.fmgr_generic:
+    method: update
+    params:
+      - url: '/pm/config/adom/{{ default_fmgr_target_adom }}/obj/wireless-controller/wtp/{{ fap_sn }}'
+        data:
+          name: '{{ fap_name }}'
+          wtp-id: '{{ fap_sn }}'
+          wtp-profile: '{{ template_fortiap }}'
+        'scope member': 
+          'name': '{{ device_name }}'
+          vdom: "{{ item.fgt_vdom }}"

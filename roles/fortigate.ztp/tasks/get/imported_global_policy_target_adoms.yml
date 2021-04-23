@@ -1,0 +1,52 @@
+- name: Get ADOMs for imported FortiGate Data
+  fortinet.fortimanager.fmgr_generic:
+    method: get
+    rc_succeeded:
+      - 0
+    params:
+      - url: /dvmdb/adom
+        filter:
+          - "name"
+          - "=="
+          - "{{ item.1.global_target_adom }}"
+  register: adom_results
+  loop: "{{ ztp_fortigates | subelements('policy_packages') }}"
+  when: item.1.global_target_adom
+
+
+#- debug: var=adom_results.results
+
+- set_fact:
+    trimmed_results: []
+
+- set_fact:
+    trimmed_results: "{{ trimmed_results + [ item ] }}"
+  loop: "{{ adom_results.results }}"
+  when: item.meta is defined
+
+#- debug: var=trimmed_results
+
+- set_fact:
+    missing_global_target_adoms: []
+
+- set_fact:
+    missing_global_target_adoms: "{{ missing_global_target_adoms + [ {'fgt_name': item.item.0.fgt_name,
+    'policy_package': item.item.1.policy_package, 'adom': item.item.1.global_target_adom }  ] }}"
+  loop: "{{ trimmed_results }}"
+  when: item.meta.response_data | length == 0
+#
+#- debug: var=missing_global_target_adoms
+
+- debug:
+    msg: "Some defined Global Policy Packages have target ADOMs that do not exist: {{ missing_global_target_adoms }}"
+  when: missing_global_target_adoms | length != 0
+  failed_when: missing_global_target_adoms | length != 0
+
+- debug:
+    msg: "All Global Policy Packages' target ADOMs exist in the target FortiManager"
+  when: missing_global_target_adoms | length == 0 and ztp_fortigates | length != 0
+
+- debug:
+    msg: "There are no rendered tmp FortiGates that were passed. Giving an OK for now.
+    We will run this check again after importing data."
+  when: ztp_fortigates | length == 0

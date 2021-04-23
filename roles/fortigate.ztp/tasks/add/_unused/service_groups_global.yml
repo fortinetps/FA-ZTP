@@ -1,0 +1,87 @@
+---
+- set_fact:
+    service_groups: []
+
+- set_fact:
+    service_objects: []
+
+- set_fact:
+    tcp_services: []
+
+- set_fact:
+    udp_services: []
+
+- set_fact:
+    tcp_service_ranges: []
+
+- set_fact:
+    udp_services_ranges: []
+
+- set_fact:
+    service_groups: "{{ service_groups +  item.service_groups  }}"
+  loop: "{{ ztp_fortigates }}"
+
+#- debug: var=service_groups
+
+- set_fact:
+    service_objects: "{{ service_objects + [item.ports ] }}"
+  loop: "{{ service_groups  }}"
+
+- set_fact:
+    flattened_service_objects: "{{ service_objects | flatten(levels=1) | unique }}"
+
+#- debug: var=flattened_service_objects
+
+# RENDER / FORMAT
+- set_fact:
+    formatted_services: "{{ lookup('template', 'services/service_object_formatter.j2') }}"
+
+#- debug: var=formatted_services
+- set_fact:
+    flattened_service_groups: "{{ service_groups | json_query('[].{name: name, ports: ports}') | unique }}"
+
+#- debug: var=flattened_service_groups
+
+- name: Add Global TCP service objects for groups
+  fortinet.fortimanager.fmgr_generic:
+    method: add
+    rc_succeeded:
+      - 0
+      - -2 # already exists
+    params:
+      - url: '/pm/config/global/obj/firewall/service/custom'
+        data:
+          name: "{{ item.name }}"
+          comment: "{{ default_fmgr_object_description_string }}"
+          tcp-portrange: "{{ item.tcp_portrange }}"
+  loop: "{{ formatted_services }}"
+  when: item.type == 'tcp'
+
+- name: Add Global UDP service objects for groups
+  fortinet.fortimanager.fmgr_generic:
+    method: add
+    rc_succeeded:
+      - 0
+      - -2 # already exists
+    params:
+      - url: '/pm/config/global/obj/firewall/service/custom'
+        data:
+          name: "{{ item.name }}"
+          comment: "{{ default_fmgr_object_description_string }}"
+          udp-portrange: "{{ item.udp_portrange }}"
+  loop: "{{ formatted_services }}"
+  when: item.type == 'udp'
+
+- name: Add Global service Groups
+  fortinet.fortimanager.fmgr_generic:
+    method: add
+    rc_succeeded:
+      - 0
+      - -2 # already exists
+    params:
+      - url: '/pm/config/global/obj/firewall/service/group'
+        data:
+          name: "{{ item.name }}"
+          comment: "{{ default_fmgr_object_description_string }}"
+          member: "{{ item.ports }}"
+  loop: "{{ flattened_service_groups }}"

@@ -1,0 +1,23 @@
+---
+- hosts: localhost
+  collections:
+    - fortinet.fortimanager
+  tasks:
+
+    - include_role:
+        name: ../roles/fortigate.ztp
+        tasks_from: templates/read_rendered_fortigates
+
+
+- hosts: fortimanager
+  connection: httpapi
+  gather_facts: no
+  collections:
+    - fortinet.fortimanager
+
+  tasks:
+    - include_role:
+        name: ../roles/fortigate.ztp
+        tasks_from: add/address_object_wan_dynamic_mapping
+      vars:
+        ztp_fortigates: "{{ hostvars['localhost']['ztp_fortigates'] }}"

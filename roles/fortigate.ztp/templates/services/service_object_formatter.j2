@@ -1,0 +1,41 @@
+{%- set ret_list = [] -%}
+{%- for service_group in flattened_service_objects -%}
+    {%- for service in service_group['ports'] -%}
+        {%- set svc_dict = {} -%}
+        {%- set svc_split = service.split('-') -%}
+        {%- set svc_part_count = ( svc_split | length ) -%}
+        {%- set svc_range = 'unknown' -%}
+        {%- if svc_part_count == 2 -%}{%- set svc_range = 'no' -%}{%- endif -%}
+        {%- if svc_part_count == 3 -%}{%- set svc_range = 'yes' -%}{%- endif -%}
+        {%- if svc_range == 'yes' -%}
+            {%- set x=svc_dict.__setitem__('start_port', svc_split[1]) -%}
+            {%- set x=svc_dict.__setitem__('end_port', svc_split[2]) -%}
+            {%- set x=svc_dict.__setitem__('type', svc_split[0]) -%}
+            {%- set x=svc_dict.__setitem__('name', service) -%}
+            {%- set x=svc_dict.__setitem__('adom', service_group['adom']) -%}
+        {%- endif -%}
+        {%- if svc_range == 'no' -%}
+            {%- set x=svc_dict.__setitem__('start_port', svc_split[1]) -%}
+            {%- set x=svc_dict.__setitem__('end_port', svc_split[1]) -%}
+            {%- set x=svc_dict.__setitem__('type', svc_split[0]) -%}
+            {%- set x=svc_dict.__setitem__('name', service) -%}
+            {%- set x=svc_dict.__setitem__('adom', service_group['adom']) -%}
+        {%- endif -%}
+        {%- if svc_dict|length > 0 -%}
+            {%- if svc_dict['type'] == 'tcp' -%}
+                {%- set tcp_portrange = [] -%}
+                {%- set portrange = svc_dict['start_port'] + "-" + svc_dict['end_port'] -%}
+                {{ tcp_portrange.append(portrange) }}
+                {%- set x=svc_dict.__setitem__('tcp_portrange', tcp_portrange) -%}
+            {%- endif -%}
+            {%- if svc_dict['type'] == 'udp' -%}
+                {%- set udp_portrange = [] -%}
+                {%- set portrange = svc_dict['start_port'] + "-" + svc_dict['end_port'] -%}
+                {{ udp_portrange.append(portrange) }}
+                {%- set x=svc_dict.__setitem__('udp_portrange', udp_portrange) -%}
+            {%- endif -%}
+            {{ ret_list.append(svc_dict) }}
+        {%- endif -%}
+    {%- endfor -%}
+{%- endfor -%}
+{{ ret_list }}

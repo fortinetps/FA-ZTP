@@ -1,0 +1,16 @@
+- name: Add cli scripts in adom db
+  fortinet.fortimanager.fmgr_generic:
+    method: add
+    params:
+      - url: '/dvmdb/adom/{{ default_fmgr_target_adom }}/script'
+        data:
+          name: '{{ item | basename() }}'
+#          content: '{{ lookup("file", item) }}'
+          content: '{{ lookup("file", item) | regex_replace("ANSIBLE_DESCRIPTION", fmgr_object_description_string) }}'
+          desc: '{{ fmgr_object_description_string }}'
+          target: adom_database
+          type: cli
+
+  loop: '{{ cli_scripts_adomdb.split(",") }}'
+
+

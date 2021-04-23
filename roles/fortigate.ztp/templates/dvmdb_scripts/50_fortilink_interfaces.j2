@@ -1,0 +1,32 @@
+{% if (item.1.fgt_fortiswitch_trunk_interfaces | length > 0) and ("VM" not in item.1.fgt_device_model) %}
+config system virtual-switch
+    edit internal
+        config port
+{% for port in item.1.fgt_fortiswitch_trunk_interfaces %}
+            delete {{ port }}
+{% endfor %}
+        end
+    end
+end
+{% endif %}
+{% if (item.1.fgt_fortiswitch_trunk_interfaces | length > 0) and ("VM" in item.1.fgt_device_model) %}
+config system interface
+{% for port in item.1.fgt_fortiswitch_trunk_interfaces %}
+    edit {{ port }}
+        set mode dhcp
+        set vdom {{ item.1.fgt_vdom }}
+        set type physical
+    next
+{% endfor %}
+end
+{% endif %}
+{% if (item.1.fgt_fortiswitch_trunk_interfaces | length > 0) %}
+config system interface
+    edit fortilink
+        set member {% for port in item.1.fgt_fortiswitch_trunk_interfaces %}{{port}} {% endfor %}
+
+        set fortilink enable
+        set role lan
+    next
+end
+{% endif %}

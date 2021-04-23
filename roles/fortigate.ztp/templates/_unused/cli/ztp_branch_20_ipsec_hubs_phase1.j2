@@ -1,0 +1,62 @@
+config vpn ipsec phase1-interface
+    {% if item.wan1_vpn_gw_ip != "None" -%}
+    edit "{{ item.name }}_WAN1"
+        set interface $(fgt_wan1_port)
+        set ike-version 2
+        set net-device enable
+        set mode-cfg enable
+        set proposal aes256-sha256
+        set add-route disable
+        set localid $(fgt_name)
+        set peertype any
+        set idle-timeout enable
+        set auto-discovery-receiver enable
+        set network-overlay enable
+        set network-id 1
+        set remote-gw {{ item.wan1_vpn_gw_ip }}
+        set psksecret {{ vpn_psk }}
+        set dpd-retrycount 2
+        set dpd-retryinterval 2
+    next{% endif %}
+
+    {% if item.wan2_vpn_gw_ip != "None" -%}
+    edit "{{ item.name }}_WAN2"
+        set interface $(fgt_wan2_port)
+        set ike-version 2
+        set net-device enable
+        set mode-cfg enable
+        set proposal aes256-sha256
+        set add-route disable
+        set localid $(fgt_name)
+        set peertype any
+        set idle-timeout enable
+        set auto-discovery-receiver enable
+        set network-overlay enable
+        set network-id 2
+        set remote-gw {{ item.wan2_vpn_gw_ip }}
+        set psksecret {{ vpn_psk }}
+        set dpd-retrycount 2
+        set dpd-retryinterval 2
+    next{% endif %}
+
+    {% if item.wan3_vpn_gw_ip != "None" -%}
+    edit "{{ item.name }}_WAN3"
+        set interface $(fgt_wan3_port)
+        set ike-version 2
+        set net-device enable
+        set mode-cfg enable
+        set proposal aes256-sha256
+        set add-route disable
+        set localid $(fgt_name)
+        set peertype any
+        set idle-timeout enable
+        set auto-discovery-receiver enable
+        set network-overlay enable
+        set network-id 3
+        set remote-gw {{ item.wan3_vpn_gw_ip }}
+        set psksecret {{ vpn_psk }}
+        set dpd-retrycount 2
+        set dpd-retryinterval 2
+    next{% endif %}
+
+end

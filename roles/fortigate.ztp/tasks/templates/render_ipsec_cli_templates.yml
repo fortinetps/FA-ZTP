@@ -1,0 +1,47 @@
+---
+
+# get all the files for each fortigate
+- name: Find the fortigate definition files
+  find:
+    paths: "{{role_path}}/vars/fortigates/"
+    patterns: "*.yml,*.yaml"
+  register: imported_fgt_files
+
+- name: read imported fortigate files
+  set_fact:
+    ztp_input_fortigates: "{{ ztp_input_fortigates + [ lookup('file', item.path, convert_data=True) | from_yaml] }}"
+  loop: "{{ imported_fgt_files.files|flatten(levels=1) }}"
+  loop_control:
+    label: "{{ item.path }}"
+
+#- debug: var=ztp_input_fortigates
+
+- name: ensure ipsec temp directory
+  file:
+    path: "{{ role_path }}/files/tmp/cli_templates"
+    state: directory
+
+- name: Render IPSEC Phase1 for Branch to Hubs
+  template:
+    src: "{{ role_path }}/templates/cli/ztp_branch_20_ipsec_hubs_phase1.j2"
+    dest: "{{ role_path }}/files/tmp/cli_templates/ztp_branch_20_ipsec_hubs_phase1_{{ item.name }}.conf"
+  loop: "{{ ztp_hubs }}"
+  loop_control:
+    index_var: bgp_hub_idx
+
+- name: Render IPSEC Interfaces for Branch to Hubs
+  template:
+    src: "{{ role_path }}/templates/cli/ztp_branch_21_ipsec_hubs_interfaces.j2"
+    dest: "{{ role_path }}/files/tmp/cli_templates/ztp_branch_21_ipsec_hubs_interfaces_{{ item.name }}.conf"
+  loop: "{{ ztp_hubs }}"
+  loop_control:
+    index_var: bgp_hub_idx
+
+- name: Render IPSEC Phase2 for Branch to Hubs
+  template:
+    src: "{{ role_path }}/templates/cli/ztp_branch_22_ipsec_hubs_phase2.j2"
+    dest: "{{ role_path }}/files/tmp/cli_templates/ztp_branch_22_ipsec_hubs_phase2_{{ item.name }}.conf"
+  loop: "{{ ztp_hubs }}"
+  loop_control:
+    index_var: bgp_hub_idx
+

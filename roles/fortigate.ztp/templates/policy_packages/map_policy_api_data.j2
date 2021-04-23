@@ -1,0 +1,21 @@
+{%- set policy_api_data = [] -%}
+{%- for flattened_policy in flattened_policy_list -%}
+        {%- set api = {} -%}
+        {%- for key, value in flattened_policy.policy.items() -%}
+            {%- set mapped_key = adom_policy_attribute_map.__getitem__(key) -%}
+            {%- if mapped_key == 'service' -%}
+                {%- if value is string -%}
+                    {%- set service_list = [value] -%}
+                    {%- set value = service_list -%}
+                {%- endif -%}
+            {%- endif -%}
+            {%- if mapped_key != 'ignore_key' -%}
+                {%- set x=api.__setitem__(mapped_key, value) -%}
+            {%- endif -%}
+
+        {%- endfor -%}
+
+        {%- set x=flattened_policy.__setitem__('api_data', api) -%}
+        {{ policy_api_data.append(flattened_policy) }}
+{%- endfor -%}
+{{ policy_api_data | to_json }}

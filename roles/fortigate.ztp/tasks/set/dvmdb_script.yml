@@ -1,0 +1,18 @@
+- name: SET dvmdb script
+  fortinet.fortimanager.fmgr_generic:
+    method: set
+    rc_succeeded:
+      - 0
+      - -2 # already exists
+    params:
+      - url: '/dvmdb/adom/{{ item.adom }}/script'
+        data:
+          name: '{{ item.name }}'
+          content: '{{ item.content }}'
+          desc: '{{ item.desc }}'
+          target: '{{ item.target }}'
+          type: "{{ item.type }}"
+          filter_device: "{{ item.scope.0.name }}"
+  loop: "{{ dvmdb_scripts }}"
+
+

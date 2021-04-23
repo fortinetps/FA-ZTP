@@ -1,0 +1,34 @@
+- name: Get ADOMs for imported FortiGate Data
+  fortinet.fortimanager.fmgr_generic:
+    method: get
+    rc_succeeded:
+      - 0
+    params:
+      - url: /dvmdb/adom
+        filter:
+          - "name"
+          - "=="
+          - "{{ item.fmgr_target_adom }}"
+  register: adom_results
+  loop: "{{ ztp_fortigates }}"
+
+#- debug: var=adom_results.results
+
+- set_fact:
+    missing_adoms: []
+
+- set_fact:
+    missing_adoms: "{{ missing_adoms + [ item.item.fmgr_target_adom  ] }}"
+  loop: "{{ adom_results.results }}"
+  when: item.meta.response_data | length == 0
+
+- debug:
+    msg: "Some ADOMs are missing: {{missing_adoms | unique }}
+    These are defined in one or more tmp FortiGate YAML files under /files/tmp/fortigates"
+  when: missing_adoms | length != 0
+  failed_when: missing_adoms | length != 0
+
+- debug:
+    msg: "All target Fortigate ADOMs exist in the target FortiManager"
+  when: missing_adoms | length == 0
+

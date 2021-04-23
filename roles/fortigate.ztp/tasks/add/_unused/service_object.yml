@@ -1,0 +1,102 @@
+---
+
+- set_fact:
+    vlan_mappings: []
+
+
+- set_fact:
+    vlan_mappings: "{{ vlan_mappings + [{
+    'fgt_name': item.0.fgt_name,
+    'subnet': item.1.subnet,
+     'vlan': item.1.vlan
+
+    }] }}"
+  loop: "{{ ztp_fortigates|subelements('fgt_lan_vlan_map') }}"
+
+#- debug: var=vlan_mappings
+
+- name: Add dynamic address object
+  fortinet.fortimanager.fmgr_generic:
+    method: add
+    rc_succeeded:
+      - 0
+      - -2 # already exists
+    params:
+      - url: '/pm/config/adom/{{ default_fmgr_target_adom }}/obj/firewall/address'
+        data:
+          name: "{{ default_fgt_address_object_prefix }}_VLAN{{item.vlan}}"
+          comment: "{{ default_fmgr_object_description_string }}"
+          subnet: "255.255.255.255/255.255.255.255"
+          type: "ipmask"
+          associated-interface: "any"
+  loop: "{{ vlan_mappings }}"
+
+- fortinet.fortimanager.fmgr_generic:
+    method: add
+    rc_succeeded:
+      - 0
+      - -2 # already exists
+    params:
+      - url: '/pm/config/adom/{{ default_fmgr_target_adom }}/obj/firewall/address'
+        data:
+          name: "BRANCH_PARENT_CIDR"
+          comment: "{{ default_fmgr_object_description_string }}"
+          subnet: "255.255.255.255/255.255.255.255"
+          type: "ipmask"
+          associated-interface: "any"
+
+- fortinet.fortimanager.fmgr_generic:
+    method: add
+    rc_succeeded:
+      - 0
+      - -2 # already exists
+    params:
+      - url: '/pm/config/adom/{{ default_fmgr_target_adom }}/obj/firewall/address'
+        data:
+          name: "BRANCH_GUEST_LAN"
+          comment: "{{ default_fmgr_object_description_string }}"
+          subnet: "255.255.255.255/255.255.255.255"
+          type: "ipmask"
+          associated-interface: "any"
+
+- fortinet.fortimanager.fmgr_generic:
+    method: add
+    rc_succeeded:
+      - 0
+      - -2 # already exists
+    params:
+      - url: '/pm/config/adom/{{ default_fmgr_target_adom }}/obj/firewall/address'
+        data:
+          name: "{{ default_fgt_address_object_prefix }}_WAN1_IP"
+          comment: "{{ default_fmgr_object_description_string }}"
+          subnet: "255.255.255.255/255.255.255.255"
+          type: "ipmask"
+          associated-interface: "any"
+
+- fortinet.fortimanager.fmgr_generic:
+    method: add
+    rc_succeeded:
+      - 0
+      - -2 # already exists
+    params:
+      - url: '/pm/config/adom/{{ default_fmgr_target_adom }}/obj/firewall/address'
+        data:
+          name: "{{ default_fgt_address_object_prefix }}_WAN2_IP"
+          comment: "{{ default_fmgr_object_description_string }}"
+          subnet: "255.255.255.255/255.255.255.255"
+          type: "ipmask"
+          associated-interface: "any"
+
+- fortinet.fortimanager.fmgr_generic:
+    method: add
+    rc_succeeded:
+      - 0
+      - -2 # already exists
+    params:
+      - url: '/pm/config/adom/{{ default_fmgr_target_adom }}/obj/firewall/address'
+        data:
+          name: "{{ default_fgt_address_object_prefix }}_WAN3_IP"
+          comment: "{{ default_fmgr_object_description_string }}"
+          subnet: "255.255.255.255/255.255.255.255"
+          type: "ipmask"
+          associated-interface: "any"

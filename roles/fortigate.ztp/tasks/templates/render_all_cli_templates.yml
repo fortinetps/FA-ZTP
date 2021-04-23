@@ -1,0 +1,24 @@
+---
+
+- name: Find the jinja cli templates
+  find:
+    paths: "{{role_path}}/templates/cli/"
+    patterns: "ztp_*.j2"
+  register: jinja_cli_templates
+
+- name: ensure cli temp directory
+  file:
+    path: "{{ role_path }}/files/tmp/cli_templates"
+    state: directory
+
+- name: Render CLI Templates Basic INIT Templates
+  template:
+    src: "{{ item.path }}"
+    dest: "{{ role_path }}/files/tmp/cli_templates/{{ item.path | basename | replace('.j2','.conf') }}"
+  with_items: "{{ jinja_cli_templates.files }}"
+  when: '"_init_" in (item.path | basename)'
+
+
+#- import_tasks: "{{ role_path }}/tasks/templates/render_bgp_cli_templates.yml"
+#- import_tasks: "{{ role_path }}/tasks/templates/render_ipsec_cli_templates.yml"
+#- import_tasks: "{{ role_path }}/tasks/templates/render_sdwan_cli_templates.yml"

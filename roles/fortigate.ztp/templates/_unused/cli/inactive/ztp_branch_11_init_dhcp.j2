@@ -1,0 +1,25 @@
+##DHCP Server
+config system dhcp server
+    edit 1000
+        set dns-service default
+        set ntp-service default
+        set default-gateway $(fgt_lan_ip)
+        set netmask $(fgt_lan_netmask_bits_long)
+        set interface $(fgt_lan_port)
+        config ip-range
+            edit 1
+                set start-ip $(fgt_lan_dhcp_start_ip)
+                set end-ip $(fgt_lan_dhcp_end_ip)
+            next
+        end
+        set timezone-option default
+        config options
+            edit 1
+                set code 119
+                set type string
+                set value $(fgt_lan_dhcp_search_domain)
+            next
+        end
+    next
+
+end

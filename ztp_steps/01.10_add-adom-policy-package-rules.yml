@@ -1,0 +1,35 @@
+---
+- hosts: localhost
+  collections:
+    - fortinet.fortimanager
+  tasks:
+
+    - include_role:
+        name: ../roles/fortigate.ztp
+        tasks_from: templates/read_rendered_fortigates
+
+
+- hosts: localhost
+  gather_facts: no
+
+  tasks:
+    - include_role:
+        name: ../roles/fortigate.ztp
+        tasks_from: templates/read_rendered_policy_packages
+      vars:
+        ztp_fortigates: "{{ hostvars['localhost']['ztp_fortigates'] }}"
+
+
+- hosts: fortimanager
+  gather_facts: no
+  connection: httpapi
+  collections:
+    - fortinet.fortimanager
+  tasks:
+
+    - include_role:
+        name: ../roles/fortigate.ztp
+        tasks_from: add/policy_package_rule_adom
+      vars:
+        flattened_policy_list: "{{ hostvars['localhost']['flattened_policy_list'] }}"
+

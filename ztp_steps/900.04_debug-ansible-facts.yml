@@ -1,0 +1,7 @@
+- hosts: localhost
+  collections:
+    - fortinet.fortimanager
+  tasks:
+    - include_role:
+        name: ../roles/fortigate.ztp
+        tasks_from: debug/ansible_facts

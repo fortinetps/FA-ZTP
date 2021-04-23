@@ -1,0 +1,9 @@
+{% if item.1.ipsec | length > 0 %}
+config system interface
+{% for vpn in item.1.ipsec %}
+    edit "{{ vpn.vpn_name }}"
+        set allowaccess ping
+    next
+{% endfor %}
+end
+{% endif %}

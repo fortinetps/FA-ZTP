@@ -1,0 +1,10 @@
+- name: Assign fortiswitch template '{{ template_fortiswitch }}' to model fortiswitch '{{ fsw_name }}:{{ fsw_sn }}'
+  fortinet.fortimanager.fmgr_generic:
+    method: update
+    params:
+      - url: /pm/config/adom/{{ default_fmgr_target_adom }}/obj/fsp/managed-switch/{{ fsw_sn }}
+        data:
+          template: '{{ template_fortiswitch }}'
+        'scope member':
+          - name: '{{ item.fgt_name }}'
+            vdom: "{{ item.fgt_vdom }}"

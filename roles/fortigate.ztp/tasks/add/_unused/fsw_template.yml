@@ -1,0 +1,16 @@
+- name: Add fortiswitch template
+  fortinet.fortimanager.fmgr_generic:
+    method: add
+    rc_succeeded:
+      - 0
+      - -2 # already exists
+    params:
+      - url: '/pm/config/adom/{{ item.fmgr_target_adom }}/obj/switch-controller/managed-switch'
+        data:
+          name: '{{ item.branch_core_fortiswitch_template }}'
+          switch-id: '{{ item.branch_core_fortiswitch_template }}'
+          _platform: '{{ item.branch_core_fortiswitch_platform }}'
+          description: '{{ default_fmgr_object_description_string }}'
+  loop: "{{ fortiswitch_templates }}"
+
+

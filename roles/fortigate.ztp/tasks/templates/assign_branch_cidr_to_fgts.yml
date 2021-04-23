@@ -1,0 +1,99 @@
+---
+# get all the files for each fortigate
+- name: Find the fortigate definition files
+  find:
+    paths: "{{role_path}}/vars/fortigates/"
+    patterns: "*.yml,*.yaml"
+  register: imported_fgt_files
+
+- name: read imported fortigate files
+  set_fact:
+    ztp_input_fortigates: "{{ ztp_input_fortigates + [ lookup('file', item.path, convert_data=True) | from_yaml] }}"
+  loop: "{{ imported_fgt_files.files|flatten(levels=1) }}"
+  loop_control:
+    label: "{{ item.path }}"
+
+- set_fact:
+    provisioned_cidr_blocks: []
+
+- name: Get a list of all the currently assigned parent_cidrs in the fortigate inventory
+  set_fact:
+    provisioned_cidr_blocks: "{{ provisioned_cidr_blocks + [ item.parent_cidr ] }}"
+  loop: "{{ ztp_input_fortigates }}"
+  when: item.parent_cidr is defined
+
+#- debug: var=provisioned_cidr_blocks
+
+- name: Remove any already used CIDR temp files that shouldn't exist
+  file:
+    path: "{{ role_path }}/files/tmp/branch_cidr_pool/{{ item | replace('/','_') }}.yaml"
+    state: absent
+  loop: "{{ provisioned_cidr_blocks }}"
+
+- set_fact:
+    ztp_fortigates_no_cidr: []
+
+- name: Save only the fortigates without an automatic branch assignment
+  set_fact:
+    ztp_fortigates_no_cidr: "{{ ztp_fortigates_no_cidr + [ item ] }}"
+  loop: "{{ ztp_input_fortigates }}"
+  when: item.parent_cidr is not defined
+
+#- debug: var=ztp_fortigates_no_cidr
+
+- set_fact:
+    ztp_fortigate_count: "{{ ztp_fortigates_no_cidr | length }}"
+
+- import_tasks: "{{ role_path }}/tasks/cidr/get_cidr_pools.yml"
+
+- set_fact:
+    branch_cidr_pool_detail: []
+
+- name: read the branch cidr temp files
+  set_fact:
+    branch_cidr_pool_detail: "{{ branch_cidr_pool_detail + [ lookup('file', item.path, convert_data=True) | from_yaml] }}"
+  loop: "{{ branch_cidr_pools.files|flatten(levels=1) }}"
+  loop_control:
+    label: "{{ item.path }}"
+
+#- debug: var=branch_cidr_pool_detail
+
+#- debug: var=branch_cidr_pools
+
+#- debug: msg="There are {{ ztp_fortigate_count }} ZTP Fortigates without auto-assigned branch cidr schemas, and {{ branch_cidr_pool_count }} Branch CIDR Pools to assign"
+- fail:
+    msg: "Not enough Branch CIDR Temp files for the number of Fortigates. Generate more."
+  when: (  ztp_fortigate_count | int  >  branch_cidr_pool_count | int  )
+
+- block:
+  - set_fact:
+      assigned_cidr_ztp_fortigates: []
+
+  - set_fact:
+      assigned_cidr_ztp_fortigates: "{{ assigned_cidr_ztp_fortigates + [ ( item.0 | combine({'parent_cidr': item.1['parent_cidr'],
+       'vlan_map': item.1['vlan_map'],
+       'child_cidr_list': item.1['child_cidr_list'],
+       'fgt_lan_cidr': item.1['child_cidr_list'][0],
+       'fgt_lan_ip': item.1['child_cidr_list'][0].split('.')[0] + '.' + item.1['child_cidr_list'][0].split('.')[1] + '.'
+                      + item.1['child_cidr_list'][0].split('.')[2] + '.'
+                      + (((item.1['child_cidr_list'][0].split('.')[3] | int ) + 1) | string ),
+       'fgt_lan_netmask_bits': item.1['child_cidr_list'][0].split('/')[1]  }))]}}"
+    loop: "{{ ztp_fortigates_no_cidr|zip(branch_cidr_pool_detail)|list }}"
+
+  - name: Write the Assigned Branch CIDR ZTP Fortigates back to files
+    copy:
+      content: "{{ item | to_nice_yaml }} "
+      dest: "{{role_path}}/vars/fortigates/{{item['fgt_name']}}.yml"
+      force: yes # overwrite the existing file!
+    loop: "{{ assigned_cidr_ztp_fortigates }}"
+
+  - name: Remove the used CIDR temp files
+    file:
+      path: "{{ role_path }}/files/tmp/branch_cidr_pool/{{ item.parent_cidr | replace('/','_') }}.yaml"
+      state: absent
+    loop: "{{ assigned_cidr_ztp_fortigates }}"
+
+  when: ( ztp_fortigate_count | int > 0 ) and (  ztp_fortigate_count | int  <=  branch_cidr_pool_count | int  )
+
+
+

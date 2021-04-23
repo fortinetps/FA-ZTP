@@ -1,0 +1,46 @@
+---
+# get all the files for each fortigate
+- name: Find the fortigate definition files
+  find:
+    paths: "{{role_path}}/vars/fortigates/"
+    patterns: "*.yml,*.yaml"
+  register: imported_fgt_files
+
+- name: read imported fortigate files
+  set_fact:
+    ztp_input_fortigates: "{{ ztp_input_fortigates + [ lookup('file', item.path, convert_data=True) | from_yaml] }}"
+  loop: "{{ imported_fgt_files.files|flatten(levels=1) }}"
+  loop_control:
+    label: "{{ item.path }}"
+
+#- debug: var=ztp_input_fortigates
+
+- set_fact:
+    sorted_ztp_input_fortigates: "{{ ztp_input_fortigates | sort(attribute='fgt_name') }}"
+
+#- debug: var=sorted_ztp_input_fortigates
+
+
+# for each fortigate combine new dicts with wan IPs
+- set_fact:
+    wan_assigned_fortigates: []
+
+- set_fact:
+    wan_assigned_fortigates: "{{ wan_assigned_fortigates + [ ( item | combine({
+        'fgt_wan1_static_cidr': (default_fgt_wan1_static_cidr | ansible.netcommon.nthhost(ip_index + 1)) + '/' + ( default_fgt_wan1_static_cidr | ipaddr('host/prefix') | ipaddr('netmask') ),
+        'fgt_wan2_static_cidr': (default_fgt_wan2_static_cidr | ansible.netcommon.nthhost(ip_index + 1)) + '/' + ( default_fgt_wan2_static_cidr | ipaddr('host/prefix') | ipaddr('netmask') ),
+        'fgt_wan3_static_cidr': (default_fgt_wan3_static_cidr | ansible.netcommon.nthhost(ip_index + 1)) + '/' + ( default_fgt_wan3_static_cidr | ipaddr('host/prefix') | ipaddr('netmask') ),
+       }))  ]}}"
+  loop: "{{ sorted_ztp_input_fortigates }}"
+  loop_control:
+    index_var: ip_index
+
+#- debug: var=wan_assigned_fortigates
+
+- name: Write the WAN IP Assigned ZTP Fortigates back to files
+  copy:
+    content: "{{ item | to_nice_yaml }} "
+    dest: "{{role_path}}/vars/fortigates/{{item['fgt_name']}}.yml"
+    force: yes # overwrite the existing file!
+  loop: "{{ wan_assigned_fortigates }}"
+

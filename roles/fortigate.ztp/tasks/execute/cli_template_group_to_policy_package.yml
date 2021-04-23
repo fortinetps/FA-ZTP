@@ -1,0 +1,26 @@
+# NOT REALLY SURE IF THIS IS NEEDED -- IF THE CLI GROUP IS ALREADY ASSIGNED TO THE
+# DEVICE GROUP DOES THIS ACTUALLY NEED TO HAPPEN?
+
+- name: Run cli script on policy packages
+  fortinet.fortimanager.fmgr_generic:
+    method: exec
+    params:
+      - url: '/dvmdb/adom/{{ item.fmgr_target_adom }}/script/execute'
+        data: 
+          adom: '{{ item.fmgr_target_adom }}'
+          package: '{{ item.fmgr_policy_package }}'
+          script: '{{ item.fmgr_cli_template_group }}'
+  register: response
+  loop: "{{ ztp_fortigates }}"
+
+- name: Wait for cli script group execution task to complete
+  fortinet.fortimanager.fmgr_fact:
+    facts:
+      selector: 'task_task'
+      params: {task: '{{ item.meta.response_data.task }}'}
+  loop: "{{ response.results }}"
+  until: taskinfo.meta.response_data.percent == 100
+  retries: "{{ fmgr_task_retries  }}"
+  delay: "{{ fmgr_task_retry_delay }}"
+  failed_when: taskinfo.meta.response_data.state == "error"
+  register: taskinfo

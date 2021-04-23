@@ -1,0 +1,9 @@
+{% set description_split = item.Description.split('|') %}
+{% set ip_split = description_split[1].split(' ') %}
+fgt_name: "{{ description_split[0] }}"
+fgt_sn: "{{item['Serial Number']}}"
+fgt_ansible_template_name: "{{ default_branch_policy_package }}"
+fgt_model: "{{item['Product Model']}}"
+fgt_expiration: "{{item['Unit Expiration Date']}}"
+fgt_registration: "{{item['Registration Date']}}"
+fgt_lan_ip: "{{ ip_split[0] }}"

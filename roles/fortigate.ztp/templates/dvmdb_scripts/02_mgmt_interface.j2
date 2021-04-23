@@ -1,0 +1,29 @@
+{% if item.1.fgt_mgmt_port %}
+{% if "VM" not in item.1.fgt_device_model and 'internal' in item.1.fgt_mgmt_port %}
+config system virtual-switch
+    edit internal
+        config port
+            delete {{ item.1.fgt_mgmt_port }}
+        end
+    next
+end
+{% endif %}
+config system interface
+    edit {{ item.1.fgt_mgmt_port }}
+{% if item.1.fgt_mgmt_ip != 'dhcp' %}
+        set mode static
+        set ip {{ item.1.fgt_mgmt_ip }}
+{% else %}
+        set mode dhcp
+{% endif %}
+        set vdom {{ item.1.fgt_vdom }}
+        set type physical
+        set role lan
+        set alias "MGMT"
+        set allowaccess ping ssh https
+{% if item.1.fgt_mgmt_vrf %}
+        set vrf {{ item.1.fgt_mgmt_vrf }}
+{% endif %}
+    next
+end
+{% endif %}

@@ -1,0 +1,22 @@
+{% if (item.1.fgt_lan_vlan_map | length > 0)  %}
+config system dhcp server
+{% for vlan in item.1.fgt_lan_vlan_map %}
+{% if vlan.dhcp_server %}
+{% if (((vlan.dhcp_server == "yes") or (vlan.dhcp_server == "YES")) and (vlan.physical_interface == "fortilink")) %}
+    edit 0
+        set default-gateway {{ vlan.ipv4_gateway | ansible.netcommon.ipaddr('address') }}
+        set dns-service default
+        set interface {{ vlan.network_alias }}
+        config ip-range
+            edit 0
+                set start-ip {{ vlan.ipv4_gateway | ansible.netcommon.ipaddr('next_usable') }}
+                set end-ip {{ vlan.ipv4_gateway | ansible.netcommon.ipaddr('last_usable') }}
+            next
+        end
+        set netmask {{ vlan.ipv4_subnet | ansible.netcommon.ipaddr('netmask') }}
+    next
+{% endif %}
+{% endif %}
+{% endfor %}
+end
+{% endif %}

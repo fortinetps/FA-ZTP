@@ -1,0 +1,20 @@
+---
+
+- set_fact:
+    policy_security_profiles: "{{ lookup('template', 'policy_packages/get_security_profiles.j2') }}"
+
+#- debug: var=policy_security_profiles
+
+
+- name: Add SSL Security Profiles
+  fortinet.fortimanager.fmgr_generic:
+    method: add
+    rc_succeeded:
+      - 0
+      - -2 # already exists
+    params:
+      - url: '/pm/config/adom/{{ item.0.adom }}/obj/firewall/ssl-ssh-profile'
+        data:
+          name: "{{ item.1 }}"
+          comment: "{{ default_fmgr_object_description_string }}"
+  loop: "{{ policy_security_profiles | subelements('ssl_inspection')}}"

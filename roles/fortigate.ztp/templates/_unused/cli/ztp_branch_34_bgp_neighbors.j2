@@ -1,0 +1,43 @@
+config router bgp
+    config neighbor
+        {% if item.wan1_vpn_bgp_neighbor != "None" -%}
+        edit {{ item.wan1_vpn_bgp_neighbor }}
+            set advertisement-interval {{ bgp_advertisement_interval }}
+            set link-down-failover {{ bgp_link_down_failover }}
+            set soft-reconfiguration enable
+            set description "{{ item.name }}_WAN1"
+            set interface "{{ item.name }}_WAN1"
+            set remote-as {{ bgp_as }}
+            set connect-timer 10
+        next{% endif %}
+
+        {% if item.wan2_vpn_bgp_neighbor != "None" -%}
+        edit {{ item.wan2_vpn_bgp_neighbor }}
+            set advertisement-interval {{ bgp_advertisement_interval }}
+            set link-down-failover {{ bgp_link_down_failover }}
+            set soft-reconfiguration enable
+            set description "{{ item.name }}_WAN2"
+            set interface "{{ item.name }}_WAN2"
+            set remote-as {{ bgp_as }}
+            set connect-timer 10
+        next{% endif %}
+
+        {% if item.wan3_vpn_bgp_neighbor != "None" -%}
+        edit {{ item.wan3_vpn_bgp_neighbor }}
+            set advertisement-interval {{ bgp_advertisement_interval }}
+            set link-down-failover {{ bgp_link_down_failover }}
+            set soft-reconfiguration enable
+            set description "{{ item.name }}_WAN3"
+            set interface "{{ item.name }}_WAN3"
+            set remote-as {{ bgp_as }}
+            set connect-timer 10
+        next{%- endif %}
+
+    end
+
+    config network
+        edit 0
+            set prefix $(fgt_lan_cidr)
+        next
+    end
+end

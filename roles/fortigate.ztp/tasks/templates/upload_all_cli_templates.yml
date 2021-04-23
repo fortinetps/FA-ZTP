@@ -1,0 +1,24 @@
+---
+- name: Find the rendered cli templates
+  find:
+    paths: "{{ role_path }}/files/tmp/cli_templates/"
+    patterns: "*.conf"
+  register: rendered_cli_templates
+  delegate_to: localhost
+
+- set_fact:
+    cli_templates: []
+  delegate_to: localhost
+
+- name: Read the rendered cli templates
+  set_fact:
+    cli_templates: "{{ cli_templates + [ { 'script': lookup('file', item.path), 'name': (item.path | basename | replace('.conf','')) }  ] }}"
+  loop: "{{ rendered_cli_templates.files|flatten(levels=1) }}"
+  loop_control:
+      label: "{{ item.path }}"
+  delegate_to: localhost
+
+- import_tasks: "{{ role_path }}/tasks/set/cli_template.yml"
+
+
+

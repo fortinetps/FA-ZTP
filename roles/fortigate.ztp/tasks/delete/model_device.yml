@@ -1,0 +1,13 @@
+- name: Delete model device '{{ device_name }}:{{ device_sn }}'
+  fortinet.fortimanager.fmgr_generic:
+    method: exec
+    rc_succeeded:
+      - 0
+      - -20002 # doesn't exist
+    params:
+      - url: /dvm/cmd/del/device
+        data:
+          adom: '{{ item.fmgr_target_adom }}'
+          device: '{{ item.fgt_name }}'
+          flags: [none]
+  loop: "{{ ztp_fortigates }}"

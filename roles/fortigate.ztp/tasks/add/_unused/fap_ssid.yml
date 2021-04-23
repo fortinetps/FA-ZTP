@@ -1,0 +1,16 @@
+- name: Add fortiap ssids
+  fortinet.fortimanager.fmgr_generic:
+    method: add
+    params:
+      - url: '/pm/config/adom/{{ default_fmgr_target_adom }}/obj/wireless-controller/vap'
+        data:
+          name: '{{ item.name }}'
+          _centmgmt: enable,
+          _intf_ip: [0.0.0.0, 0.0.0.0]
+          _intf_allowaccess: [ping, ssh, http, https]
+          ssid: '{{ item.ssid }}'
+          schedule: always
+          passphrase: fortinet
+          quarantine: disable
+
+  loop: '{{ fap_ssids }}'

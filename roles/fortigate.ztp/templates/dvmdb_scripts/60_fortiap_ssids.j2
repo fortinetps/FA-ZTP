@@ -1,0 +1,24 @@
+{% if (item.1.fap_ssids | length > 0) %}
+config wireless-controller vap
+{% for ssid in item.1.fap_ssids %}
+    edit {{ ssid.ssid }}
+        set ssid "{{ ssid.ssid }}"
+        set schedule always
+        set broadcast-ssid {{ ssid.broadcast_ssid }}
+        set security "{{ ssid.security_mode }}"
+{% if "personal" in ssid.security_mode %}
+        set passphrase {{ ssid.passphrase }}
+{% endif %}
+{% if ssid.traffic_mode == "bridge" %}
+        set local-bridging enable
+{% endif %}
+{% if ssid.bridge_vlan %}
+        set vlanid {{ ssid.bridge_vlan }}
+{% endif %}
+{% if ssid.traffic_mode == "mesh" %}
+        set mesh-backhaul enable
+{% endif %}
+    next
+{% endfor %}
+end
+{% endif %}

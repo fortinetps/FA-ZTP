@@ -1,0 +1,71 @@
+---
+
+- name: Find the dvmdb templates
+  find:
+    paths: "{{role_path}}/templates/dvmdb_scripts/"
+    patterns: "*.j2"
+  register: jinja_dvmdb_templates
+
+# clear the tmp folder
+- name: Remove tmp folder
+  file:
+    path: "{{ role_path }}/files/tmp/exported_dvmdb_scripts"
+    state: absent
+
+- name: ensure temp directory
+  file:
+    path: "{{ role_path }}/files/tmp/exported_dvmdb_scripts"
+    state: directory
+
+- set_fact:
+    dvmdb_scripts: []
+
+
+- set_fact:
+    dvmdb_scripts: "{{ dvmdb_scripts + [{
+        'content': lookup('template', item.0.path),
+        'script_name': item.1.fgt_name + '_' + (item.0.path | basename | replace('.j2','.conf')),
+        'fortigate': item.1.fgt_name
+        }] }}"
+  loop: "{{ jinja_dvmdb_templates.files | product(ztp_fortigates) | list}}"
+
+- debug: var=dvmdb_scripts
+
+# make the fortigate temp folders
+# first get the list of fortigates
+
+- set_fact:
+    exported_script_fortigates: []
+
+- set_fact:
+    exported_script_fortigates: "{{ exported_script_fortigates + [ item.fortigate ] }}"
+  loop: "{{ dvmdb_scripts }}"
+  when: item.fortigate not in exported_script_fortigates
+
+- name: ensure fortigate temp directory
+  file:
+    path: "{{ role_path }}/files/tmp/exported_dvmdb_scripts/{{ item }}"
+    state: directory
+  loop: "{{ exported_script_fortigates }}"
+
+- name: ensure fortigate temp directory to hold the many files
+  file:
+    path: "{{ role_path }}/files/tmp/exported_dvmdb_scripts/{{ item }}/source"
+    state: directory
+  loop: "{{ exported_script_fortigates }}"
+
+- copy:
+    content: "{{ item.content }}"
+    dest: "{{ role_path }}/files/tmp/exported_dvmdb_scripts/{{ item.fortigate }}/source/{{ item.script_name }}"
+  loop: "{{ dvmdb_scripts }}"
+
+
+# now we need to concatenate all of those scripts together to make an "all-in-one" script
+
+- name: Now assemble the scripts by fortigate into an "all-in-one" script.
+  assemble:
+    src: "{{ role_path }}/files/tmp/exported_dvmdb_scripts/{{ item }}/source"
+    dest: "{{ role_path }}/files/tmp/exported_dvmdb_scripts/{{ item }}/{{item}}_AIO.conf"
+  loop: "{{ exported_script_fortigates }}"
+
+

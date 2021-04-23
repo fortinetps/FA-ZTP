@@ -1,0 +1,42 @@
+---
+- hosts: localhost
+  collections:
+    - fortinet.fortimanager
+  tasks:
+
+    - include_role:
+        name: ../roles/fortigate.ztp
+        tasks_from: templates/read_rendered_fortigates
+
+- hosts: fortimanager
+  connection: httpapi
+  gather_facts: no
+  collections:
+    - fortinet.fortimanager
+
+  vars_prompt:
+    - name: "RESET_EVERYTHING"
+      prompt: "ARE YOU SURE YOU WANT TO RESET AND REMOVE *EVERYTHING*? THIS INCLUDES FORTIMANAGER DATA OBJECTS! (yes/no)"
+      private: no
+
+  tasks:
+    - include_role:
+        name: ../roles/fortigate.ztp
+        tasks_from: delete/model_device
+      vars:
+        ztp_fortigates: "{{ hostvars['localhost']['ztp_fortigates'] }}"
+      when:
+        - RESET_EVERYTHING == "yes"
+
+    - include_role:
+        name: ../roles/fortigate.ztp
+        tasks_from: templates/delete_rendered_dvmdb_scripts
+      vars:
+        ztp_fortigates: "{{ hostvars['localhost']['ztp_fortigates'] }}"
+
+
+    - include_role:
+        name: ../roles/fortigate.ztp
+        tasks_from: debug/reset_role_to_default
+      when:
+        - RESET_EVERYTHING == "yes"

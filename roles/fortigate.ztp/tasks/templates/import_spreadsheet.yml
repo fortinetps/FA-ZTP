@@ -1,0 +1,3 @@
+---
+- name: Import Spreadsheet {{ spreadsheet_path }}
+  command: "python3 {{ role_path }}/files/python/consume_spreadsheet.py --file {{ spreadsheet_path }} --role_vars_dir {{ role_path }}/vars"

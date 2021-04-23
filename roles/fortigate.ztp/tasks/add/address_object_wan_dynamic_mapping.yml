@@ -1,0 +1,47 @@
+---
+- set_fact:
+    normalized_interfaces: "{{ lookup('template', 'interfaces/normalized_interfaces.j2')  }}"
+
+- debug: var=normalized_interfaces
+
+- set_fact:
+    wan_interfaces: []
+
+- set_fact:
+    wan_interfaces: "{{ wan_interfaces + [ item ] }}"
+  loop: "{{ normalized_interfaces }}"
+  when: '"WAN" in item.normalized_interface'
+
+- debug: var=wan_interfaces
+
+- name: Add dynamic address object
+  fortinet.fortimanager.fmgr_generic:
+    method: add
+    rc_succeeded:
+      - 0
+      - -2 # already exists
+    params:
+      - url: '/pm/config/adom/{{ item.fmgr_target_adom }}/obj/firewall/address'
+        data:
+          name: "{{ item.normalized_interface }}"
+          comment: "{{ item.fmgr_object_description_string }}"
+          subnet: "255.255.255.255/255.255.255.255"
+          type: "ipmask"
+          associated-interface: "any"
+  loop: "{{ wan_interfaces }}"
+
+- name: Add address object dynamic mappings
+  fortinet.fortimanager.fmgr_generic:
+    method: add
+    rc_succeeded:
+      - 0
+      - -2 # already exists
+    params:
+      - url: '/pm/config/adom/{{ item.fmgr_target_adom }}/obj/firewall/address/{{ item.normalized_interface }}/dynamic_mapping'
+        data:
+          - _scope:
+            - name: "{{ item.fgt_name }}"
+              vdom: "{{ item.fgt_vdom }}"
+            subnet: "{{ item.ipv4_address }}"
+  loop: "{{ wan_interfaces }}"
+  when: item.ipv4_address

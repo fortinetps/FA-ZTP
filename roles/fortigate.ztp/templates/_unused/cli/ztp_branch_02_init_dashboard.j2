@@ -1,0 +1,44 @@
+config system admin
+    edit "admin"
+        config gui-dashboard
+            edit 3
+                set name "Network"
+                set vdom "root"
+                config widget
+                    edit 1
+                        set type routing
+                        set x-pos 2
+                        set width 2
+                        set height 1
+                        set router-view-type "staticdynamic"
+                    next
+                    edit 2
+                        set type tr-history
+                        set x-pos 1
+                        set width 2
+                        set height 1
+                        set interface $(fgt_wan1_port)
+                    next
+                    edit 3
+                        set type virtual-wan
+                        set x-pos 3
+                        set width 2
+                        set height 1
+                    next
+                    edit 4
+                        set type ipsec-vpn
+                        set x-pos 4
+                        set width 2
+                        set height 1
+                    next
+                    edit 5
+                        set type tr-history
+                        set width 2
+                        set height 1
+                        set interface $(fgt_wan2_port)
+                    next
+                end
+            next
+        end
+    next
+end

@@ -1,0 +1,10 @@
+- name: Delete dvmdb script
+  fortinet.fortimanager.fmgr_generic:
+    method: delete
+    rc_succeeded:
+      - 0
+      - -3 # doesn't exist !
+    params:
+      - url: '/dvmdb/adom/{{ item.adom }}/script/{{ item.name }}'
+  loop: "{{ dvmdb_scripts }}"
+

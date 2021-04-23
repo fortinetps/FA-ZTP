@@ -1,0 +1,14 @@
+- name: Add sdwan template
+  fortinet.fortimanager.fmgr_generic:
+    method: add
+    rc_succeeded:
+      - 0
+      - -2 # already exists
+    params:
+      - url: '/pm/wanprof/adom/{{ item.fmgr_target_adom }}'
+        data:
+          - name: '{{ item.fmgr_sdwan_template }}'
+            type: wanprof
+            description: '{{ item.fmgr_object_description_string }}'
+  loop: "{{ ztp_fortigates }}"
+

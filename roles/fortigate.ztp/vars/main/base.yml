@@ -1,0 +1,16 @@
+---
+collections:
+  - fortinet.fortimanager
+
+
+# fortinet.fortimanager collection behavior variables
+fmgr_task_retries: 30
+fmgr_task_retry_delay: 5
+
+
+# empty inits -- leave empty!
+ztp_fortigates: []   # must remain an empty list do not add any fortigates here
+                     # use the directory var/fortigates and define each fortigate into its own file
+ztp_input_fortigates: [] # same thing here -- don't touch it
+fortiswitch_templates: []
+flattened_policy_list: []

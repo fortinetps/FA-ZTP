@@ -1,0 +1,13 @@
+- name: Add sdwan template zones
+  fortinet.fortimanager.fmgr_generic:
+    method: add
+    rc_succeeded:
+      - 0
+      - -2 # already exists
+    params:
+      - url: '/pm/config/adom/{{ default_fmgr_target_adom }}/wanprof/{{ default_branch_sdwan_template }}/system/sdwan/zone'
+        data:
+          - name: '{{ item.zone }}'
+            service-sla-tie-break: "cfg-order"
+  loop: "{{ default_branch_sdwan_template_interface_members }}"
+

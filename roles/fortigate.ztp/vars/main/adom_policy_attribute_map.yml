@@ -1,0 +1,23 @@
+adom_policy_attribute_map:
+  name: name
+  action: action
+  schedule: schedule
+  source_int: srcintf
+  destination_int: dstintf
+  source_addr: srcaddr
+  destination_addr: dstaddr
+  service: service
+  nat: nat
+  antivirus: av-profile
+  web_filter: webfilter-profile
+  dns_filter: dnsfilter-profile
+  appcontrol: application-list
+  ips: ips-sensor
+  file_filter: file-filter-profile
+  voip: voip-profile
+  ssl_inspection: ssl-ssh-profile
+  comments: comments
+  log: logtraffic
+  sequence: policyid
+  header_or_footer: ignore_key
+  policy_package: ignore_key

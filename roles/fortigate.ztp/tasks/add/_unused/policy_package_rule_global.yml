@@ -1,0 +1,28 @@
+---
+
+- debug: var=flattened_policy_list
+
+- set_fact:
+    formatted_policy_api_data: "{{ lookup('template', 'policy_packages/map_global_policy_api_data.j2')  }}"
+
+#- debug: var=formatted_policy_api_data
+
+- name: Add Global Policy Rules
+  fortinet.fortimanager.fmgr_generic:
+    method: add
+    rc_succeeded:
+      - 0
+      - -2 # object already exists
+      - -9998 # duplicate policy name
+    params:
+      - url: '/pm/config/global/pkg/{{ item.pkg }}/{{item.api_data.header_or_footer}}/policy'
+        data: "{{ item.api_data.data }}"
+
+  loop: "{{ formatted_policy_api_data }}"
+  when: (item.global | lower) == 'yes'
+  register: policy_package_rule_results
+
+#- debug: var=policy_package_rule_results
+
+
+

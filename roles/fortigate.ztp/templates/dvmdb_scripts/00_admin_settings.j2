@@ -1,0 +1,10 @@
+config system global
+    set admintimeout 60
+    set gui-theme blue
+    set alias {{ item.1.fgt_name }}
+    set hostname {{ item.1.fgt_name }}
+end
+config system settings
+    set gui-dns-database enable
+    set gui-dynamic-routing enable
+end

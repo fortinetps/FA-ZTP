@@ -1,0 +1,8 @@
+- name: Add VDOM '{{ device_name }}:{{ multitenant_vdom }}' in device group '{{ multitenant_device_group }}'
+  fortinet.fortimanager.fmgr_generic:
+    method: add
+    params:
+      - url: /dvmdb/adom/{{ default_fmgr_target_adom }}/group/{{ multitenant_device_group }}/object member
+        data:
+          name: '{{ device_name }}'
+          vdom: '{{ multitenant_vdom }}'

@@ -1,0 +1,8 @@
+{%- for template_group in tmp_cli_template_groups -%}
+    {%- for cli_template in fmgr_cli_templates.meta.response_data -%}
+        {%- if template_group.hub_name in cli_template["name"] -%}
+           {{ template_group["members"].append(cli_template["name"]) }}
+        {%- endif -%}
+    {%- endfor -%}
+{%- endfor -%}
+{{ tmp_cli_template_groups }}

@@ -1,0 +1,16 @@
+
+- name: Populate fortiswitch template ports
+  fortinet.fortimanager.fmgr_generic:
+    method: add
+    rc_succeeded:
+      - 0
+      - -2 # already exists
+    params:
+      - url: '/pm/config/adom/{{ adom }}/obj/switch-controller/managed-switch/{{ template_fortiswitch }}/ports'
+        data:
+          port-name: '{{ item.name }}'
+          vlan: '{{ item.vlan }}'
+          allowed-vlans: [default.qtnport]
+          untagged-vlans: [default.qtnport]
+
+  loop: '{{ fortiswitch_ports }}'

@@ -1,0 +1,55 @@
+config system interface
+    edit $(fgt_wan1_port)
+        set vdom root
+        set type physical
+        set mode $(fgt_wan1_mode)
+        set ip $(fgt_wan1_static_cidr)
+        set alias "WAN1"
+        set inbandwidth $(fgt_wan1_dl_speed_kbps)
+        set outbandwidth $(fgt_wan1_ul_speed_kbps)
+        set estimated-upstream-bandwidth $(fgt_wan1_ul_speed_kbps)
+        set estimated-downstream-bandwidth $(fgt_wan1_dl_speed_kbps)
+        set role wan
+    next
+    edit $(fgt_wan2_port)
+        set vdom root
+        set type physical
+        set mode $(fgt_wan2_mode)
+        set ip $(fgt_wan2_static_cidr)
+        set alias "WAN2"
+        set inbandwidth $(fgt_wan2_dl_speed_kbps)
+        set outbandwidth $(fgt_wan2_ul_speed_kbps)
+        set estimated-upstream-bandwidth $(fgt_wan2_ul_speed_kbps)
+        set estimated-downstream-bandwidth $(fgt_wan2_dl_speed_kbps)
+        set role wan
+    next
+    edit $(fgt_wan3_port)
+        set vdom root
+        set type physical
+        set mode $(fgt_wan3_mode)
+        set ip $(fgt_wan3_static_cidr)
+        set alias "WAN3"
+        set inbandwidth $(fgt_wan3_dl_speed_kbps)
+        set outbandwidth $(fgt_wan3_ul_speed_kbps)
+        set estimated-upstream-bandwidth $(fgt_wan3_ul_speed_kbps)
+        set estimated-downstream-bandwidth $(fgt_wan3_dl_speed_kbps)
+        set role wan
+    next
+end
+config router static
+    edit 0
+        set gateway 198.18.100.253
+        set device $(fgt_wan1_port)
+        set comment "WAN1 routes"
+    next
+    edit 0
+        set gateway 198.18.101.253
+        set device $(fgt_wan2_port)
+        set comment "WAN2 routes"
+    next
+    edit 0
+        set gateway 198.18.102.253
+        set device $(fgt_wan3_port)
+        set comment "WAN3 routes"
+    next
+end

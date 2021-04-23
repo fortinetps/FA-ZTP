@@ -1,0 +1,34 @@
+---
+- hosts: localhost
+  collections:
+    - fortinet.fortimanager
+  tasks:
+
+    - include_role:
+        name: ../roles/fortigate.ztp
+        tasks_from: templates/read_rendered_fortigates
+
+
+- hosts: fortimanager
+  connection: httpapi
+  gather_facts: no
+  collections:
+    - fortinet.fortimanager
+
+#  vars_files:
+#    - ./roles/fortigate.ztp/vaults/fgt_passwd.yml
+
+  vars_prompt:
+    - name: "DELETE_ZTP_FORTIGATES"
+      prompt: "ARE YOU SURE YOU WANT TO DELETE RENDERED ZTP FORTIGATES (yes/no)?"
+      private: no
+
+  tasks:
+
+    - include_role:
+        name: ../roles/fortigate.ztp
+        tasks_from: delete/model_device
+      vars:
+        ztp_fortigates: "{{ hostvars['localhost']['ztp_fortigates'] }}"
+      when:
+        - DELETE_ZTP_FORTIGATES == "yes"

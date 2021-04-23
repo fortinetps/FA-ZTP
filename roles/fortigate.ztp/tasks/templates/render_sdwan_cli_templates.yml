@@ -1,0 +1,60 @@
+---
+
+# get all the files for each fortigate
+- name: Find the fortigate definition files
+  find:
+    paths: "{{role_path}}/vars/fortigates/"
+    patterns: "*.yml,*.yaml"
+  register: imported_fgt_files
+
+- name: read imported fortigate files
+  set_fact:
+    ztp_input_fortigates: "{{ ztp_input_fortigates + [ lookup('file', item.path, convert_data=True) | from_yaml] }}"
+  loop: "{{ imported_fgt_files.files|flatten(levels=1) }}"
+  loop_control:
+    label: "{{ item.path }}"
+
+#- debug: var=ztp_input_fortigates
+
+- name: ensure sdwan temp directory
+  file:
+    path: "{{ role_path }}/files/tmp/cli_templates"
+    state: directory
+
+- name: Render SDWAN Core Template
+  template:
+    src: "{{ role_path }}/templates/cli/ztp_branch_40_sdwan_core.j2"
+    dest: "{{ role_path }}/files/tmp/cli_templates/ztp_branch_40_sdwan_core.conf"
+#  loop: "{{ ztp_input_fortigates }}"
+
+#
+#- name: Render SDWAN WAN Zones Template
+#  template:
+#    src: "{{ role_path }}/templates/cli/ztp_branch_41_sdwan_wan_zone.j2"
+#    dest: "{{ role_path }}/files/tmp/cli_templates/ztp_branch_41_sdwan_wan_zone.conf"
+##  loop: "{{ ztp_input_fortigates }}"
+
+
+#- name: Render BGP Route Maps
+#  template:
+#    src: "{{ role_path }}/templates/cli/ztp_branch_32_bgp_route_maps.j2"
+#    dest: "{{ role_path }}/files/tmp/cli_templates/ztp_branch_32_bgp_route_maps_{{ item.name }}.conf"
+#  loop: "{{ ztp_hubs }}"
+#  loop_control:
+#    index_var: bgp_hub_idx
+#
+#- name: Render BGP Neighbors
+#  template:
+#    src: "{{ role_path }}/templates/cli/ztp_branch_34_bgp_neighbors.j2"
+#    dest: "{{ role_path }}/files/tmp/cli_templates/ztp_branch_34_bgp_neighbors_{{ item.name }}.conf"
+#  loop: "{{ ztp_hubs }}"
+#  loop_control:
+#    index_var: bgp_hub_idx
+#
+#- name: Render VPN Static Routes for BGP Neighbors
+#  template:
+#    src: "{{ role_path }}/templates/cli/ztp_branch_33_bgp_vpn_routes.j2"
+#    dest: "{{ role_path }}/files/tmp/cli_templates/ztp_branch_33_bgp_vpn_routes_{{ item.name }}.conf"
+#  loop: "{{ ztp_hubs }}"
+#  loop_control:
+#    index_var: bgp_hub_idx

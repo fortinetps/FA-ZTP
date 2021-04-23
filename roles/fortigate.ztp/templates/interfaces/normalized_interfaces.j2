@@ -1,0 +1,52 @@
+{%- set interfaces = [] -%}
+{%- for fgt in ztp_fortigates -%}
+    {%- if fgt.fgt_wan1_port -%}
+        {%- set append_dict = {'normalized_interface': "CARRIER1", 'fmgr_target_adom': fgt.fmgr_target_adom,
+                                'fmgr_object_description_string': fgt.fmgr_object_description_string,
+                                'local_port': fgt.fgt_wan1_port, 'fgt_vdom': fgt.fgt_vdom,
+                                'fgt_name': fgt.fgt_name, 'ipv4_address': fgt.fgt_wan1_ip } -%}
+        {{ interfaces.append(append_dict) }}
+    {%- endif -%}
+    {%- if fgt.fgt_wan2_port -%}
+        {%- set append_dict = {'normalized_interface': "CARRIER2", 'fmgr_target_adom': fgt.fmgr_target_adom,
+                                'fmgr_object_description_string': fgt.fmgr_object_description_string,
+                                'local_port': fgt.fgt_wan2_port, 'fgt_vdom': fgt.fgt_vdom,
+                                'fgt_name': fgt.fgt_name, 'ipv4_address': fgt.fgt_wan2_ip } -%}
+        {{ interfaces.append(append_dict) }}
+    {%- endif -%}
+    {%- if fgt.fgt_wan3_port -%}
+        {%- set append_dict = {'normalized_interface': "CARRIER3", 'fmgr_target_adom': fgt.fmgr_target_adom,
+                                'fmgr_object_description_string': fgt.fmgr_object_description_string,
+                                'local_port': fgt.fgt_wan3_port, 'fgt_vdom': fgt.fgt_vdom,
+                                'fgt_name': fgt.fgt_name, 'ipv4_address': fgt.fgt_wan3_ip } -%}
+        {{ interfaces.append(append_dict) }}
+    {%- endif -%}
+    {%- if fgt.fgt_mgmt_port -%}
+        {%- set append_dict = {'normalized_interface': "MGMT", 'fmgr_target_adom': fgt.fmgr_target_adom,
+                                'fmgr_object_description_string': fgt.fmgr_object_description_string,
+                                'local_port': fgt.fgt_mgmt_port, 'fgt_vdom': fgt.fgt_vdom,
+                                'fgt_name': fgt.fgt_name, 'ipv4_address': fgt.fgt_mgmt_ip } -%}
+        {{ interfaces.append(append_dict) }}
+    {%- endif -%}
+    {%- if fgt.ipsec | length > 0 -%}
+        {%- for vpn in fgt.ipsec -%}
+            {%- set append_dict = {'normalized_interface': vpn.vpn_name, 'fmgr_target_adom': fgt.fmgr_target_adom,
+                                'fmgr_object_description_string': fgt.fmgr_object_description_string,
+                                'local_port': vpn.vpn_name, 'fgt_vdom': fgt.fgt_vdom,
+                                'fgt_name': fgt.fgt_name, 'ipv4_address': vpn.vpn_interface_ip } -%}
+            {{ interfaces.append(append_dict) }}
+        {%- endfor -%}
+    {%- endif -%}
+    {%- if fgt.fgt_lan_vlan_map | length > 0 -%}
+        {%- for vlan in fgt.fgt_lan_vlan_map -%}
+            {%- if vlan.vlan_id != 0 -%}
+            {%- set append_dict = {'normalized_interface': vlan.network_alias, 'fmgr_target_adom': fgt.fmgr_target_adom,
+                                'fmgr_object_description_string': fgt.fmgr_object_description_string,
+                                'local_port': vlan.network_alias, 'fgt_vdom': fgt.fgt_vdom,
+                                'fgt_name': fgt.fgt_name, 'ipv4_address': vlan.ipv4_gateway } -%}
+            {{ interfaces.append(append_dict) }}
+            {%- endif -%}
+        {%- endfor -%}
+    {%- endif -%}
+{%- endfor -%}
+{{ interfaces | to_json }}

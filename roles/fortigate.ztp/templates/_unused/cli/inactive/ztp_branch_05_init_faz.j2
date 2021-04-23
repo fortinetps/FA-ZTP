@@ -1,0 +1,8 @@
+##Logging
+config log fortianalyzer setting
+    set status enable
+    set server $(fgt_faz_target_ip)
+    set certificate-verification disable
+    set upload-option realtime
+    set reliable enable
+end

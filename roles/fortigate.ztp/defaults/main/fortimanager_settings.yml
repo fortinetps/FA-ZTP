@@ -1,0 +1,14 @@
+---
+
+default_fmgr_object_description_string: 'Created by Ansible' # added to any objects in Fortimanager as a comment
+default_fmgr_target_adom: root # the target fortimanager adom
+default_fmgr_target_adom_ver: 6.0 # target fortimanager adom version number
+default_fmgr_target_adom_mr: 4 # target fortimanager adom minor revision number
+default_fgt_device_model: "FortiGate-VM64-KVM"
+default_fgt_admin_user: admin  # the fortigate default user profile
+default_fgt_address_object_prefix: "NA_BRANCH"  # What prefix to give the branch vlan objects in fortimanager
+default_fgt_faz_target_ip: "192.168.0.5"
+default_fgt_fmg_target_ip: "192.168.0.10"
+default_fgt_vdom: "root"
+default_fmgr_mgmt_mode: "fmg" # "fmg" for FortiManager only. "fmgfaz" for both fmg/faz on the same fmg machine.
+default_device_group: Branch

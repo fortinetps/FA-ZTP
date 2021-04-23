@@ -1,0 +1,10 @@
+config system interface
+    edit $(fgt_lan_port)
+        set vdom root
+        set type physical
+        set role lan
+        set ip $(fgt_lan_ip)
+        set alias "LAN"
+        set allowaccess ping ssh https
+    next
+end

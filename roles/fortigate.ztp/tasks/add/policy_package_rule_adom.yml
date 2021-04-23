@@ -1,0 +1,27 @@
+---
+
+#- debug: var=flattened_policy_list
+
+- set_fact:
+    formatted_policy_api_data: "{{ lookup('template', 'policy_packages/map_policy_api_data.j2')  }}"
+
+#- debug: var=formatted_policy_api_data
+
+- name: Add Policy Package Rules
+  fortinet.fortimanager.fmgr_generic:
+    method: add
+    rc_succeeded:
+      - 0
+      - -2 # object already exists
+      - -9998 # duplicate policy name
+    params:
+      - url: '/pm/config/adom/{{ item.adom }}/pkg/{{ item.pkg }}/firewall/policy'
+        data: "{{ item.api_data }}"
+
+  loop: "{{ formatted_policy_api_data }}"
+  register: policy_package_rule_results
+
+#- debug: var=policy_package_rule_results
+
+
+

@@ -1,0 +1,15 @@
+- name: Add ADOM '{{ default_fmgr_target_adom }}'
+  fortinet.fortimanager.fmgr_generic:
+    method: add
+    rc_succeeded:
+      - 0
+      - -2 # adom already exists
+    params:
+      - url: /dvmdb/adom
+        data:
+          name: '{{ default_fmgr_target_adom }}'
+          os_ver: '{{ default_fmgr_target_adom_ver | string }}'
+          mr: '{{ default_fmgr_target_adom_mr | int }}'
+          desc: '{{ default_fmgr_object_description_string }}'
+          flags: central_sdwan
+          obj_customize: "[ \"vwp\", \"fw6\", \"vwp6\", \"fws\", \"nat46\", \"nat64\", \"proxy\", \"csnat\", \"fwc_vwp\", \"dos\", \"dos6\", \"intf\", \"intf6\", \"mcast\", \"localin\", \"localin6\", \"shaping\", \"authrule\", \"pblock\", \"app_isc\", \"mcaddress\", \"trafficclass\", \"virtualserver\", \"healthmonitor\", \"fwdserver\", \"authscheme\", \"dnsprof\", \"wafprof\", \"emailfilterprof\", \"voipprof\", \"icapprof\", \"proxyopt\", \"sslprof\", \"profgrp\", \"webratingoverride\", \"weburlfilter\", \"webcontentfilter\", \"localcategory\", \"dlpfingerprint\", \"icapserver\", \"appsignature\", \"app_grp\", \"ipssign\", \"emailfilterlist\", \"pop3\", \"pki\", \"wanoptprof\", \"peer\", \"authgrp\", \"loccert\", \"vpntunnel\", \"replacemsg\", \"cacert\", \"cliopt\", \"clionlyid\" ]"

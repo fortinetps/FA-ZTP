@@ -1,0 +1,19 @@
+- name: Add fortiap template '{{ template_fortiap }}'
+  fortinet.fortimanager.fmgr_generic:
+    method: add
+    params:
+      - url: '/pm/config/adom/{{ default_fmgr_target_adom }}/obj/wireless-controller/wtp-profile'
+        data:
+          name: '{{ template_fortiap }}'
+          comment: '{{ fmgr_object_description_string }}'
+          ap-country: NA
+          platform:
+            type: '{{ fortiap_platform }}'
+          radio-1:
+            band: 802.11n
+            vap-all: disable
+            vaps: ['{{ fap_ssids[0].name }}', '{{ fap_ssids[1].name }}']
+          radio-2:
+            band: 802.11ac
+            vap-all: disable
+            vaps: ['{{ fap_ssids[0].name }}', '{{ fap_ssids[1].name }}']

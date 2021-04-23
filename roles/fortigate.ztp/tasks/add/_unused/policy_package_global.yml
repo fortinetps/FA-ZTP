@@ -1,0 +1,14 @@
+
+- name: Add GLOBAL policy packages
+  fortinet.fortimanager.fmgr_generic:
+    method: add
+    rc_succeeded:
+      - 0
+      - -2 # already exists
+    params:
+      - url: '/pm/pkg/global'
+        data:
+          name: '{{ item.1.policy_package }}'
+          type: pkg
+  loop: "{{ ztp_fortigates | subelements('policy_packages')}}"
+  when: (item.1.global | lower) == 'yes'

@@ -1,0 +1,51 @@
+config system sdwan
+    set status enable
+    config zone{% for hub in ztp_hubs %}
+
+        edit "{{ hub.name }}_OVERLAY"
+        next{% endfor %}
+
+        edit "BRANCH_WAN_OVERLAY"
+        next
+    end
+    config members
+        {%- set loop_count = 0 -%}
+        {% for hub in ztp_hubs %}
+        {% if hub.wan1_vpn_gw_ip != "None" %}
+
+        edit 0
+            set interface "{{ hub.name }}_WAN1"
+            set zone "{{ hub.name }}_OVERLAY"
+        next{% endif %}
+
+        {% if hub.wan2_vpn_gw_ip != "None" %}
+
+        edit 0
+            set interface "{{ hub.name }}_WAN2"
+            set zone "{{ hub.name }}_OVERLAY"
+        next{% endif %}
+
+        {% if hub.wan3_vpn_gw_ip != "None" %}
+
+        edit 0
+            set interface "{{ hub.name }}_WAN3"
+            set zone "{{ hub.name }}_OVERLAY"
+        next{% endif %}
+        {%- endfor %}
+
+        edit 0
+            set interface $(fgt_wan1_port)
+            set zone "BRANCH_WAN_OVERLAY"
+        next
+        edit 0
+            set interface $(fgt_wan2_port)
+            set zone "BRANCH_WAN_OVERLAY"
+        next
+        edit 0
+            set interface $(fgt_wan3_port)
+            set zone "BRANCH_WAN_OVERLAY"
+        next
+
+    end
+end
+

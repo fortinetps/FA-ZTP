@@ -1,0 +1,29 @@
+config system interface
+    {% if item.wan1_vpn_gw_ip != "None" -%}
+    edit "{{ item.name }}_WAN1"
+        set allowaccess ping
+        set inbandwidth $(fgt_wan1_dl_speed_kbps)
+        set outbandwidth $(fgt_wan1_ul_speed_kbps)
+        set estimated-upstream-bandwidth $(fgt_wan1_ul_speed_kbps)
+        set estimated-downstream-bandwidth $(fgt_wan1_dl_speed_kbps)
+    next{% endif %}
+
+    {% if item.wan2_vpn_gw_ip != "None" -%}
+    edit "{{ item.name }}_WAN2"
+        set allowaccess ping
+        set inbandwidth $(fgt_wan2_dl_speed_kbps)
+        set outbandwidth $(fgt_wan2_ul_speed_kbps)
+        set estimated-upstream-bandwidth $(fgt_wan2_ul_speed_kbps)
+        set estimated-downstream-bandwidth $(fgt_wan2_dl_speed_kbps)
+    next{% endif %}
+
+    {% if item.wan3_vpn_gw_ip != "None" -%}
+    edit "{{ item.name }}_WAN3"
+        set allowaccess ping
+        set inbandwidth $(fgt_wan3_dl_speed_kbps)
+        set outbandwidth $(fgt_wan3_ul_speed_kbps)
+        set estimated-upstream-bandwidth $(fgt_wan3_ul_speed_kbps)
+        set estimated-downstream-bandwidth $(fgt_wan3_dl_speed_kbps)
+    next{% endif %}
+
+end

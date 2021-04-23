@@ -1,0 +1,20 @@
+config router static
+    {% if item.wan1_vpn_bgp_neighbor != "None" -%}
+    edit 0
+        set dst {{ item.wan1_vpn_bgp_neighbor }} 255.255.255.255
+        set device "{{ item.name}}_WAN1"
+    next{% endif %}
+
+    {% if item.wan2_vpn_bgp_neighbor != "None" -%}
+    edit 0
+        set dst {{ item.wan2_vpn_bgp_neighbor }} 255.255.255.255
+        set device "{{ item.name}}_WAN2"
+    next{% endif %}
+
+    {% if item.wan3_vpn_bgp_neighbor != "None" -%}
+    edit 0
+        set dst {{ item.wan3_vpn_bgp_neighbor }} 255.255.255.255
+        set device "{{ item.name}}_WAN3"
+    next{% endif %}
+
+end

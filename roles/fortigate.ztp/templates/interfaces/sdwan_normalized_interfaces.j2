@@ -1,0 +1,11 @@
+{%- set sdwan_interfaces = [] -%}
+{%- for fgt in ztp_fortigates -%}
+    {%- for zone in fgt.sdwan_zones -%}
+        {%- set append_dict = {'normalized_interface': zone, 'fmgr_target_adom': fgt.fmgr_target_adom,
+                                'fmgr_object_description_string': fgt.fmgr_object_description_string,
+                                'local_port': zone, 'fgt_vdom': fgt.fgt_vdom,
+                                'fgt_name': fgt.fgt_name} -%}
+        {{ sdwan_interfaces.append(append_dict) }}
+    {%- endfor -%}
+{%- endfor -%}
+{{ sdwan_interfaces | to_json }}

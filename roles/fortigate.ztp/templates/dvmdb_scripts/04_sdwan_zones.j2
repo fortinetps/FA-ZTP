@@ -1,0 +1,11 @@
+{% if item.1.sdwan_zones | length > 0 %}
+config system sdwan
+    set status enable
+    config zone
+{% for zone in item.1.sdwan_zones %}
+        edit "{{ zone }}"
+        next
+{% endfor %}
+    end
+end
+{% endif %}

@@ -1,0 +1,15 @@
+{%- set ret = [] -%}
+{%- for fgt in ztp_fortigates_no_cidr -%}
+    {%- for cidr_map in branch_cidr_pool_detail -%}
+        {%- set net_match = cidr_map['child_cidr_list'][0] | network_in_usable(fgt['fgt_lan_ip']) -%}
+        {%- if net_match == True -%}
+            {%- set x=fgt.__setitem__('vlan_map', cidr_map['vlan_map']) -%}
+            {%- set x=fgt.__setitem__('parent_cidr', cidr_map['parent_cidr']) -%}
+            {%- set x=fgt.__setitem__('child_cidr_list', cidr_map['child_cidr_list']) -%}
+            {%- set x=fgt.__setitem__('fgt_lan_cidr', cidr_map['child_cidr_list'][0]) -%}
+            {%- set x=fgt.__setitem__('fgt_lan_netmask_bits', cidr_map['child_cidr_list'][0].split('/')[1]) -%}
+            {{ ret.append(fgt) }}
+        {%- endif -%}
+    {%- endfor -%}
+{%- endfor -%}
+{{ ret }}

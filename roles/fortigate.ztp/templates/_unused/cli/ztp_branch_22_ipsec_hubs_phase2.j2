@@ -1,0 +1,23 @@
+config vpn ipsec phase2-interface
+    {% if item.wan1_vpn_gw_ip != "None" -%}
+    edit "{{ item.name }}_WAN1"
+        set phase1name "{{ item.name }}_WAN1"
+        set proposal aes256-sha256
+        set auto-negotiate enable
+    next{% endif %}
+
+    {% if item.wan2_vpn_gw_ip != "None" -%}
+    edit "{{ item.name }}_WAN2"
+        set phase1name "{{ item.name }}_WAN2"
+        set proposal aes256-sha256
+        set auto-negotiate enable
+    next{% endif %}
+
+    {% if item.wan3_vpn_gw_ip != "None" -%}
+    edit "{{ item.name }}_WAN3"
+        set phase1name "{{ item.name }}_WAN3"
+        set proposal aes256-sha256
+        set auto-negotiate enable
+    next{% endif %}
+
+end

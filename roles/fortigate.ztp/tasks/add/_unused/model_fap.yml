@@ -1,0 +1,11 @@
+- name: Add model fortiap '{{ fap_name }}:{{ fap_sn }}' to model device '{{ device_name }}:{{ device_sn }}'
+  fortinet.fortimanager.fmgr_generic:
+    method: add
+    params:
+      - url: /pm/config/device/{{ device_name }}/vdom/root/wireless-controller/wtp
+        data:
+          name: '{{ fap_name }}'
+          wtp-id: '{{ fap_sn }}'
+#          wtp-profile: '{{ template_fortiap }}'
+          wtp-profile: '{{ template_fortiap_default }}'
+        push: 1

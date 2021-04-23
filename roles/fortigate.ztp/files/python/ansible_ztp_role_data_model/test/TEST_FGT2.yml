@@ -1,0 +1,122 @@
+-   address_groups:
+    -   name: CIO_DST
+        subnets:
+        - 10.0.0.0/8
+        - 172.16.0.0/12
+        - 192.168.0.0/16
+        - 170.248.0.0/16
+        - 170.249.0.0/16
+        - 170.251.0.0/16
+        - 170.252.0.0/16
+        - 141.251.0.0/16
+        - 134.177.0.0/16
+        - 104.146.32.0/19
+        - 144.36.0.0/16
+        - 199.200.16.0/21
+        - 199.200.24.0/22
+        - 100.112.0.100/32
+    -   name: DIA
+        subnets: 172.16.50.0/24
+    -   name: BENCH
+        subnets: 172.16.70.0/24
+    -   name: VOICE_IPs
+        subnets: 172.16.80.0/24
+    -   name: BENCH2
+        subnets: 10.13.73.40/29
+    -   name: PRINTER_IPs
+        subnets: 172.16.81.0/24
+    bgp_community_lists: []
+    bgp_neighbor_groups: []
+    bgp_neighbors: []
+    bgp_route_maps: []
+    fap_profiles: []
+    fap_ssids: []
+    fgt_address_object_prefix: NA_BRANCH
+    fgt_admin_user: admin
+    fgt_device_model: FortiGate-VM64-KVM
+    fgt_faz_target_ip: 192.168.0.5
+    fgt_fortiswitch_trunk_interfaces:
+    - port6
+    - port7
+    fgt_ha_mode: null
+    fgt_ha_port: null
+    fgt_lan_ip: 10.133.20.1/24
+    fgt_lan_port: port5
+    fgt_lan_vlan_map: []
+    fgt_latitude: 47.5603994622326
+    fgt_local_bgp_as: null
+    fgt_location_name: West Seattle
+    fgt_longitude: -122.386489504471
+    fgt_name: TEST_FGT2
+    fgt_sn: FGVM02TM20010185
+    fgt_static_routes: []
+    fgt_street_address: 4720 California Ave SW, Seattle, WA 98116
+    fgt_system_template: Branch
+    fgt_topology_type: Spoke
+    fgt_vdom: root
+    fgt_wan1_dl_speed_kbps: 500000
+    fgt_wan1_ip: 198.18.100.2/24
+    fgt_wan1_port: port2
+    fgt_wan1_ul_speed_kbps: 250000
+    fgt_wan2_dl_speed_kbps: 75000
+    fgt_wan2_ip: 198.18.101.2/24
+    fgt_wan2_port: port3
+    fgt_wan2_ul_speed_kbps: 35000
+    fgt_wan3_dl_speed_kbps: 15000
+    fgt_wan3_ip: 198.18.102.2/24
+    fgt_wan3_port: port4
+    fgt_wan3_ul_speed_kbps: 10000
+    fmgr_mgmt_mode: fmg
+    fmgr_object_description_string: Created by Ansible
+    fmgr_target_adom: NA_64
+    fmgr_target_adom_mr: 4
+    fmgr_target_adom_ver: 6.0
+    fmgr_target_device_group: Branch
+    fortiaps: []
+    fortiswitches: []
+    ipsec: []
+    policy_packages: []
+    sdwan_interfaces: []
+    sdwan_rules: []
+    sdwan_slas: []
+    sdwan_zones: []
+    service_groups:
+    -   name: BENCH_VIDEO_SVCS
+        ports:
+        - tcp-1300
+        - tcp-1503
+        - tcp-1718-1720
+        - tcp-1731
+        - tcp-2979
+        - tcp-3230-3260
+        - tcp-5001
+        - tcp-5060
+        - tcp-5061
+        - tcp-5555-6555
+        - tcp-8080
+        - tcp-11000-20999
+        - tcp-49152-65535
+        - udp-1300
+        - udp-1503
+        - udp-1718-1720
+        - udp-1731
+        - udp-2326-2487
+        - udp-2776
+        - udp-2777
+        - udp-2979
+        - udp-3230-3342
+        - udp-5001
+        - udp-11720
+        - udp-16384-32767
+        - udp-49152-65535
+        - tcp-5062
+    -   name: PRINTER_SVCS
+        ports:
+        - udp-161
+        - tcp-631
+        - tcp-9100
+    -   name: VOIP_SVCs
+        ports:
+        - tcp-39000-39195
+        - udp-39000-39195
+    zones: []

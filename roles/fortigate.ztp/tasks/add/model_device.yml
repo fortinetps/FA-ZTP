@@ -1,0 +1,28 @@
+---
+- fortinet.fortimanager.fmgr_generic:
+    method: exec
+    rc_succeeded:
+      - 0
+      - -20010 # RC for "sn already in use" -- i.e. the fortigate is already in fortimanager
+    params:
+      - url: /dvm/cmd/add/device
+        data:
+          adom: "{{ item.fmgr_target_adom }}"
+          flags:
+            - create_task
+            - nonblocking
+          device:
+            name: "{{ item.fgt_name }}"
+            sn: "{{ item.fgt_sn }}"
+            desc: "{{ item.fmgr_object_description_string }}"
+            mgmt_mode: "{{ item.fmgr_mgmt_mode }}"
+            mr: "{{ item.fmgr_target_adom_mr | int }}"
+            os_type: fos
+            os_ver: "{{ item.fmgr_target_adom_ver | string }}"
+            'device action': add_model
+            platform_str: "{{ item.fgt_device_model }}"
+            flags: 67371040
+            latitude: "{{ item.fgt_latitude }}"
+            longitude: "{{ item.fgt_longitude }}"
+
+  loop: "{{ ztp_fortigates }}"

@@ -1,0 +1,13 @@
+- name: Add cli templates
+  fortinet.fortimanager.fmgr_generic:
+    method: delete
+    rc_succeeded:
+      - 0
+      - -2 # already exists
+    params:
+      - url: '/pm/config/adom/{{ default_fmgr_target_adom }}/obj/cli/template'
+        data:
+          name: '{{ item.name }}'
+
+  with_items: '{{ fmgr_cli_templates }}'
+

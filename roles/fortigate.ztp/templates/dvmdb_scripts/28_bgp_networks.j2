@@ -1,0 +1,13 @@
+{% if item.1.fgt_lan_vlan_map | length > 0 %}
+config router bgp
+    config network
+{% for network in item.1.fgt_lan_vlan_map -%}
+{% if (network.bgp_network == "YES") or (network.bgp_network == "yes") %}
+        edit 0
+            set prefix {{ network.ipv4_subnet }}
+        next
+{% endif %}
+{% endfor %}
+    end
+end
+{% endif %}

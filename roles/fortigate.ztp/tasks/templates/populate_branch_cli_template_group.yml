@@ -1,0 +1,26 @@
+---
+- name: Find the rendered cli templates
+  find:
+    paths: "{{ role_path }}/files/tmp/cli_templates/"
+    patterns: "*.conf"
+  register: static_cli_templates
+  delegate_to: localhost
+
+- set_fact:
+    cli_templates: []
+  delegate_to: localhost
+
+- set_fact:
+    cli_templates: "{{ cli_templates + [ item.path | basename | replace('.conf','') ] }}"
+  loop: "{{ static_cli_templates.files|flatten(levels=1) }}"
+
+#- debug: var=cli_templates
+
+- set_fact:
+    cli_template_group_mappings: "{{ [{'cli_template_group': default_branch_cli_template_group, 'members': cli_templates}] }}"
+
+#- debug: var=cli_template_group_mappings
+
+- name: Update the CLI Template Group Mappings
+  import_tasks: "{{ role_path }}/tasks/set/cli_template_group_members.yml"
+

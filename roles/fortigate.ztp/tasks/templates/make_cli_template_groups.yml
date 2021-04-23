@@ -1,0 +1,14 @@
+---
+
+# get the hub names
+- set_fact:
+    ztp_cli_template_group_names: []
+
+- set_fact:
+    ztp_cli_template_group_names: "{{ ztp_cli_template_group_names + [ 'BRANCH_TO_' + item.name ] }}"
+  loop: "{{ ztp_hubs }}"
+
+#- debug: var=ztp_cli_template_group_names
+
+- import_tasks: "{{ role_path }}/tasks/add/cli_template_group.yml"
+

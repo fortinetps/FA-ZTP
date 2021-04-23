@@ -1,0 +1,56 @@
+---
+- set_fact:
+    address_groups: []
+
+- set_fact:
+    address_groups: "{{ address_groups +  item.address_groups  }}"
+  loop: "{{ ztp_fortigates }}"
+
+#- debug: var=address_groups
+
+- set_fact:
+    address_objects: []
+
+- set_fact:
+    address_objects: "{{ address_objects + [item.subnets ] }}"
+  loop: "{{ address_groups  }}"
+
+- set_fact:
+    flatten_address_objects: "{{ address_objects | flatten(levels=1) | unique }}"
+
+#- debug: var=flatten_address_objects
+#- debug: var=address_groups
+
+- set_fact:
+    flattened_address_groups: "{{ address_groups | json_query('[].{name: name, subnets: subnets}') | unique }}"
+
+#- debug: var=flattened_address_groups
+- name: Add Global address objects for groups
+  fortinet.fortimanager.fmgr_generic:
+    method: add
+    rc_succeeded:
+      - 0
+      - -2 # already exists
+    params:
+      - url: '/pm/config/global/obj/firewall/address'
+        data:
+          name: "{{ item }}"
+          comment: "{{ default_fmgr_object_description_string }}"
+          subnet: "{{ item }}"
+          type: "ipmask"
+          associated-interface: "any"
+  loop: "{{ flatten_address_objects }}"
+
+- name: Add Global address Groups
+  fortinet.fortimanager.fmgr_generic:
+    method: add
+    rc_succeeded:
+      - 0
+      - -2 # already exists
+    params:
+      - url: '/pm/config/global/obj/firewall/addrgrp'
+        data:
+          name: "{{ item.name }}"
+          comment: "{{ default_fmgr_object_description_string }}"
+          member: "{{ item.subnets }}"
+  loop: "{{ flattened_address_groups }}"
