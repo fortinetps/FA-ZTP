@@ -12,7 +12,6 @@
 
 Before you dive into this topic please review the PDF at **docs/powerpoint/Ansible ZTP Role Data Layers and Workflow.pdf**.
 
-We cannot display it here for you. The repo must be cloned to open it. 
 
 ## Organizational Workflow Data Model
 
