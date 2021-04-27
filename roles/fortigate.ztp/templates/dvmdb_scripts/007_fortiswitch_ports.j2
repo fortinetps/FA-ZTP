@@ -22,13 +22,27 @@ config switch-controller managed-switch
 
 {% endif %}
 {% endif %}
+{% if port.stp %}
                 set stp-state {{ port.stp }}
+{% endif %}
+{% if port.stp_root_guard %}
                 set stp-root-guard {{ port.stp_root_guard }}
+{% endif %}
+{% if port.stp_bpdu_guard %}
                 set stp-bpdu-guard {{ port.stp_bpdu_guard }}
+{% endif %}
+{% if port.edge_port %}
                 set edge-port {{ port.edge_port }}
+{% endif %}
+{% if port.dhcp_snooping %}
                 set dhcp-snooping {{ port.dhcp_snooping }}
+{% endif %}
+{% if port.loop_guard %}
                 set loop-guard {{ port.loop_guard }}
+{% endif %}
+{% if port.qos_policy %}
                 set qos-policy {{ port.qos_policy }}
+{% endif %}
             next
 {% endfor %}
         end

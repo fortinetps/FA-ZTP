@@ -113,7 +113,10 @@ def get_schema():
             'fgt_device_model': And(str),
             'fgt_faz_target_ip': Or(str, None),
             'fgt_fortilink_trunk_interfaces': Or(list, None),
+            'fortilink_interfaces_from_vsw': Or(And(str, Or('yes', 'no', 'none')), None),
             'fortilink_stack_ip': Or(str, None),
+            'fortilink_split_interface': Or(And(str, Or('enable', 'disable')), None),
+            'fortilink_auto_authorize': Or(And(str, Or('enable', 'disable')), None),
             'fgt_mgmt_ip': Or(str, None),
             'fgt_mgmt_port': Or(str, None),
             'fgt_mgmt_vrf': Or(int, None),
@@ -190,20 +193,19 @@ def get_schema():
                         {
                             'allowed_vlans': Or(list, None),
                             'description': Or(str, None),
-                            'dhcp_snooping': And(str, Or('trusted', 'untrusted')),
-                            'edge_port': And(str, Or('enable', 'disable')),
+                            'dhcp_snooping': Or(And(str, Or('trusted', 'untrusted')), None),
+                            'edge_port': Or(And(str, Or('enable', 'disable')), None),
                             'fortiswitch_name': And(str),
                             'lldp_profile': Or(str, None),
-                            'lldp_status': And(str, Or('disable', 'tx', 'rx', 'tx-rx')),
-                            'loop_guard': And(str, Or('enable', 'disable')),
+                            'lldp_status': Or(And(str, Or('disable', 'tx', 'rx', 'tx-rx')), None),
+                            'loop_guard': Or(And(str, Or('enable', 'disable')), None),
                             'nac_profile': Or(str, None),
                             'native_vlan': Or(str, None),
                             'port': Or(int, str),
                             'qos_policy': Or(str, None),
-                            'stp': And(str, Or('enable', 'disable')),
-                            'stp_bpdu_guard': And(str, Or('enable', 'disable')),
-                            'stp_root_guard': And(str, Or('enable', 'disable')),
-                            # 'upstream_fortigate_name': And(str)
+                            'stp': Or(And(str, Or('enable', 'disable')), None),
+                            'stp_bpdu_guard': Or(And(str, Or('enable', 'disable')), None),
+                            'stp_root_guard': Or(And(str, Or('enable', 'disable')), None)
 
                         }
                     ]

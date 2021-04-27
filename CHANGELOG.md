@@ -4,35 +4,45 @@
 
 # Releases
 
+* [v0.5 - 4/27/21](#v05)
 * [v0.4 - 4/26/21](#v04)
 * [v0.3 - 4/22/21](#v03)
 * [v0.2 - 4/21/21](#v02)
 * [v0.1 - 4/20/21](#v01)
 
+## v0.5
+
+* Added IPv6 to BGP Network Advertisements.
+* Added FortiLink Split Interface option.
+* Added FortiLink IP Change w/ DHCP Scope Change.
+* Improved the FortiLink interface logic by adding a field "FortiLink Interfaces From VSW" field.
+  * This tells Ansible that the ports desired for FortiLink use are part of a default-factory virtual switch.
+  * This is common on smaller FortiGates for branch offices w/out dedicated FortiLink ports.
+
 ## v0.4
 
-* Added IPv6 Addresses on the Network Interfaces
-* Added validation with FortiAP Radio1/2 Channel Width/Bonding settings
-* Added Enterprise Radius FortiAP Authentication
-* Added basic Captive Portal for SSIDs
-* Added Radius Server 
-* Added Radius Server User group 
-* Changed the "Set Community" field to a parsed list under BGP Route Maps
+* Added IPv6 Addresses on the Network Interfaces.
+* Added validation with FortiAP Radio1/2 Channel Width/Bonding settings.
+* Added Enterprise Radius FortiAP Authentication.
+* Added basic Captive Portal for SSIDs.
+* Added Radius Server.
+* Added Radius Server User group.
+* Changed the "Set Community" field to a parsed list under BGP Route Maps.
 * Added additional fields to BGP Neighbors & Neighbor Groups:
   * Update Source
   * Graceful Restart
   * Soft Configuration
-* Added AS Path Lists with Regex Expressions 
-* Added Prefix Lists
-* Added IPSec Remote IP
-* Added IPSec Allow Access list
-* Added IPSec Bandwidth Limits
+* Added AS Path Lists with Regex Expressions.
+* Added Prefix Lists.
+* Added IPSec Remote IP.
+* Added IPSec Allow Access list.
+* Added IPSec Bandwidth Limits.
 * Added a third digit to the intrinsic sort order of the dvmdb Jinja2 scripts to allow for more customization.
   * This leaves plenty of out-of-box sort order ranges for use.
 
-The Organizational Workflow Data Model has undergone significant changes as a result of the additions above:
+The Organizational Workflow Data Model has undergone significant changes as a result of the additions above.
 
-![](docs/images/spreadsheet_data_model_v0.4.png)
+[Click here to see the v0.4 Organizational Workflow Data Model](docs/images/spreadsheet_data_model_v0.4.png)
 
 ### Known Issues
 

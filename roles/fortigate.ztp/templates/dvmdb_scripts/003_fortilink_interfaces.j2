@@ -1,4 +1,4 @@
-{% if (item.1.fgt_fortilink_trunk_interfaces | length > 0) and ("VM" not in item.1.fgt_device_model) %}
+{% if ((item.1.fgt_fortilink_trunk_interfaces | length > 0) and (item.1.fortilink_interfaces_from_vsw | lower == 'yes')) %}
 config system virtual-switch
     edit internal
         config port
@@ -27,13 +27,30 @@ config system interface
 
         set fortilink enable
         set role lan
+{% if item.1.fortilink_split_interface %}
+        set fortilink-split-interface {{ item.1.fortilink_split_interface }}
+{% endif %}
+{% if item.1.fortilink_auto_authorize %}
+        set auto-auth-extension-device {{ item.1.fortilink_auto_authorize }}
+{% endif %}
+{% if item.1.fortilink_stack_ip %}
+        set ip {{ item.1.fortilink_stack_ip }}
+{% endif %}
     next
 end
 {% endif %}
 {% if item.1.fortilink_stack_ip %}
-config system interface
-    edit fortilink
-        set ip {{ item.1.fortilink_stack_ip }}
+config system dhcp server
+    edit 2
+        set default-gateway {{ item.1.fortilink_stack_ip | ansible.netcommon.ipaddr('address') }}
+        config ip-range
+            delete 1
+            edit 1
+                set start-ip {{ item.1.fortilink_stack_ip| ansible.netcommon.ipaddr('next_usable') }}
+                set end-ip {{ item.1.fortilink_stack_ip | ansible.netcommon.ipaddr('last_usable') }}
+            next
+        end
+        set netmask {{ item.1.fortilink_stack_ip | ansible.netcommon.ipaddr('netmask') }}
     next
 end
 {% endif %}

@@ -58,7 +58,10 @@ class FortiGates(Base):
     wan3_ul_kbps = Column(String)
     wan3_dl_kbps = Column(String)
     fortilink_trunk_interfaces = Column(String)
+    fortilink_interfaces_from_vsw = Column(String)
     fortilink_stack_ip = Column(String)
+    fortilink_split_interface = Column(String)
+    fortilink_auto_authorize = Column(String)
     fmgr_device_group = Column(String)
 
     device_locations = relationship("DeviceLocations")
