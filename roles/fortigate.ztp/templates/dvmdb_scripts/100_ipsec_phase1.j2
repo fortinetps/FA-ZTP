@@ -1,0 +1,26 @@
+{% if item.1.ipsec | length > 0 %}
+config vpn ipsec phase1-interface
+{% for vpn in item.1.ipsec %}
+    edit "{{ vpn.vpn_name }}"
+        set interface {{ vpn.wan_interface }}
+        set ike-version {{ vpn.ike_version }}
+        set net-device enable
+        set mode-cfg enable
+        set proposal {{ vpn.phase1_encryption | lower }}-{{ vpn.phase1_authentication | lower}}
+        set add-route disable
+        set localid {{ vpn.fortigate_name }}
+        set peertype any
+        set idle-timeout enable
+        set auto-discovery-receiver enable
+        set network-overlay enable
+        set network-id {{ vpn.overlay_id }}
+        set remote-gw {{ vpn.wan_gateway }}
+        set psksecret {{ vpn.psk }}
+        set dpd-retrycount 2
+        set dpd-retryinterval 2
+        set keylife {{ vpn.phase1_key_lifetime }}
+        set dhgrp {{ vpn.phase1_dh_group }}
+    next
+{% endfor %}
+end
+{% endif %}

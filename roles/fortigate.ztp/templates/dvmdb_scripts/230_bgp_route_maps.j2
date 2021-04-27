@@ -1,0 +1,35 @@
+{% if item.1.bgp_route_maps | length > 0 %}
+config router route-map
+{% for route_map in item.1.bgp_route_maps %}
+    edit "{{ route_map.name }}"
+        config rule
+            edit 0
+{% if route_map.set_community %}
+                set set-community {% for set_community in route_map.set_community %}"{{set_community}}" {% endfor %}
+
+{% endif %}
+{% if route_map.match_community_list %}
+                set match-community "{{ route_map.match_community_list }}"
+{% endif %}
+{% if route_map.set_route_tag %}
+                set set-route-tag {{ route_map.set_route_tag }}
+{% endif %}
+{% if route_map.match_as_path %}
+                set match-as-path {{ route_map.match_as_path }}
+{% endif %}
+{% if route_map.set_local_preference %}
+                set set-local-preference {{ route_map.set_local_preference }}
+{% endif %}
+{% if route_map.match_ip_address %}
+                set match-ip-address "{{ route_map.match_ip_address }}"
+{% endif %}
+                unset set-ip-nexthop
+                unset set-ip6-nexthop
+                unset set-ip6-nexthop-local
+                unset set-originator-id
+            next
+        end
+    next
+{% endfor %}
+end
+{% endif %}

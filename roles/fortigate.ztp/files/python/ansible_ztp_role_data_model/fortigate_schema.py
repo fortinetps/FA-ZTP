@@ -4,6 +4,15 @@ from schema import Schema, And, Use, Or, Optional, SchemaError
 def get_schema():
     schema = Schema(
         [{
+            'as_path_lists': [
+                {
+                    'fortigate_name': And(str),
+                    'name': And(str),
+                    'rule': And(int),
+                    'regexp': And(str),
+                    'action': And(str)
+                }
+            ],
             'address_groups': [
                 {
                     'name': And(str),
@@ -21,33 +30,39 @@ def get_schema():
             ],
             'bgp_neighbor_groups': [
                 {
-                    'advertisement_interval': And(int),
+                    'advertisement_interval': Or(int, None),
                     'comments': Or(str, None),
-                    'connect_timer': And(int),
+                    'connect_timer': Or(int, None),
                     'fortigate_name': And(str),
-                    'link_failover': And(str, Or('enable', 'disable')),
+                    'link_failover': Or(And(str, Or('enable', 'disable')), None),
                     'neighbor_group_name': And(str),
                     'prefix': And(str),
                     'remote_as': And(int),
                     'route_map_in': Or(str, None),
                     'route_map_out': Or(str, None),
                     'route_map_out_preferable': Or(str, None),
+                    'update_source': Or(str, None),
+                    'graceful_restart': Or(And(str, Or('enable', 'disable')), None),
+                    'soft_reconfiguration': Or(And(str, Or('enable', 'disable')), None)
                 }
             ],
             'bgp_neighbors': [
                 {
-                    'advertisement_interval': And(int),
+                    'advertisement_interval': Or(int, None),
                     'comments': Or(str, None),
-                    'connect_timer': And(int),
+                    'connect_timer': Or(int, None),
                     'fortigate_name': And(str),
-                    'link_failover': And(str, Or('enable', 'disable')),
+                    'link_failover': Or(And(str, Or('enable', 'disable')), None),
                     'local_as': And(int),
-                    'local_interface': And(str),
+                    'local_interface': Or(str, None),
                     'neighbor_ip': And(str),
                     'remote_as': And(int),
                     'route_map_in': Or(str, None),
                     'route_map_out': Or(str, None),
                     'route_map_out_preferable': Or(str, None),
+                    'update_source': Or(str, None),
+                    'graceful_restart': Or(And(str, Or('enable', 'disable')), None),
+                    'soft_reconfiguration': Or(And(str, Or('enable', 'disable')), None)
                 }
             ],
             'bgp_route_maps': [
@@ -55,8 +70,11 @@ def get_schema():
                     'fortigate_name': And(str),
                     'match_community_list': Or(str, None),
                     'name':  And(str),
-                    'set_community': Or(str, None),
-                    'set_route_tag': Or(int, None)
+                    'set_community': Or(list, None),
+                    'set_route_tag': Or(int, None),
+                    'match_as_path': Or(str, None),
+                    'set_local_preference': Or(int, None),
+                    'match_ip_address': Or(str, int, None)
                 }
             ],
             'fap_profiles': [
@@ -64,19 +82,22 @@ def get_schema():
                     'fortiap_platform': And(str),
                     'location_name': And(str),
                     'profile_name': And(str),
-                    'radio_1_band': And(str),
-                    'radio_1_channel_width': And(str),
-                    'radio_1_channels': Or(str, list),
-                    'radio_1_mode': And(str),
-                    'radio_2_band': And(str),
-                    'radio_2_channel_width': And(str),
-                    'radio_2_channels': Or(str, list),
-                    'radio_2_mode': And(str),
+                    'radio_1_band': Or(str, None),
+                    'radio_1_channel_width': Or(And(str, Or('20MHz', '40MHz', '80MHz', '160MHz')), None),
+                    'radio_1_channels': Or(str, list, None),
+                    'radio_1_mode': Or(str, None),
+                    'radio_2_band': Or(str, None),
+                    'radio_2_channel_width': Or(And(str, Or('20MHz', '40MHz', '80MHz', '160MHz')), None),
+                    'radio_2_channels': Or(str, list, None),
+                    'radio_2_mode': Or(str, None),
                 }
             ],
             'fap_ssids': [
                 {
-                    'authentication': Or(str, None),
+                    'radius_server': Or(str, None),
+                    'captive_portal_url': Or(str, None),
+                    'captive_user_groups': Or(str, None),
+                    'captive_exempt_cidrs': Or(list, None),
                     'bridge_vlan': Or(int, None),
                     'broadcast_ssid': And(str, Or('enable', 'disable')),
                     'passphrase': Or(str, None),
@@ -84,14 +105,15 @@ def get_schema():
                     'ssid': And(str),
                     'traffic_mode': And(str),
                     'tunnel_ipv4_gateway': Or(str, None),
-                    'upstream_fortigate_name': And(str)
+                    'fortigate_name': And(str)
                 }
             ],
             'fgt_address_object_prefix': Or(str, None),
             'fgt_admin_user': And(str),
             'fgt_device_model': And(str),
             'fgt_faz_target_ip': Or(str, None),
-            'fgt_fortiswitch_trunk_interfaces': Or(list, None),
+            'fgt_fortilink_trunk_interfaces': Or(list, None),
+            'fortilink_stack_ip': Or(str, None),
             'fgt_mgmt_ip': Or(str, None),
             'fgt_mgmt_port': Or(str, None),
             'fgt_mgmt_vrf': Or(int, None),
@@ -202,7 +224,7 @@ def get_schema():
             ],
             'ipsec': [
                 {
-                    'admin_access': Or(list, str, None),
+                    'allow_access': Or(list, str, None),
                     'comments': Or(str, None),
                     'fortigate_name': And(str),
                     'ike_version': And(int),
@@ -218,12 +240,23 @@ def get_schema():
                     'phase2_key_lifetime': And(int),
                     'psk': And(str),
                     'remote_subnet': And(str),
+                    'remote_interface_ip': Or(str, None),
                     'vpn_interface_ip': Or(str, None),
                     'vpn_name': And(str),
                     'vpn_type': And(str),
                     'vrf_id': And(int),
                     'wan_gateway': And(str),
                     'wan_interface': And(str),
+                    'ul_speed_kbps': Or(int, None),
+                    'dl_speed_kbps': Or(int, None)
+                }
+            ],
+            'prefix_lists': [
+                {
+                    'fortigate_name': And(str),
+                    'name': And(str),
+                    'rule': And(int),
+                    'prefix': And(str)
                 }
             ],
             'policy_packages': [
@@ -255,6 +288,16 @@ def get_schema():
                             'web_filter': Or(str, None)
                         }
                     ]
+                }
+            ],
+            'radius_servers': [
+                {
+                    'fortigate_name': And(str),
+                    'name': And(str),
+                    'radius_server_ip': And(str),
+                    'radius_coa': Or(And(str, Or('enable', 'disable')), None),
+                    'timeout': Or(int),
+                    'source_ip': Or(str)
                 }
             ],
             'sdwan_interfaces': [

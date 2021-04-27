@@ -1,0 +1,34 @@
+{% if (item.1.ha | length == 1) %}
+{% if "VM" not in item.1.fgt_device_model and 'internal' in (item.1.ha[0].ha_ports | string) %}
+config system virtual-switch
+    edit internal
+        config port
+{% for ha_port in item.1.ha[0].ha_ports %}
+{% set port_split = ha_port.split(" ") %}
+            delete {{ port_split[0] }}
+{% endfor %}
+{% for mon_port in item.1.ha[0].monitor_ports %}
+            delete {{ mon_port }}
+{% endfor %}
+        end
+    next
+end
+{% endif %}
+config system ha
+    set mode {{ item.1.ha[0].ha_mode }}
+    set hbdev {{ item.1.ha[0].ha_ports | join(" ") }}
+    set group-name {{ item.1.ha[0].group_name }}
+{% if item.1.ha[0].session_pickup %}
+    set session-pickup {{ item.1.ha[0].session_pickup }}
+{% endif %}
+{% if item.1.ha[0].session_pickup_connectionless %}
+    set session-pickup-connectionless {{ item.1.ha[0].session_pickup_connectionless }}
+{% endif %}
+{% if item.1.ha[0].priority %}
+    set priority {{ item.1.ha[0].priority }}
+{% endif %}
+{% if item.1.ha[0].monitor_ports | length > 0 %}
+    set monitor {{ item.1.ha[0].monitor_ports | join(" ") }}
+{% endif %}
+end
+{% endif %}

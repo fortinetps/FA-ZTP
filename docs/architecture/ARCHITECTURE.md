@@ -13,6 +13,7 @@
 Before you dive into this topic please review the PDF at **docs/powerpoint/Ansible ZTP Role Data Layers and Workflow.pdf**.
 
 
+
 ## Organizational Workflow Data Model
 
 * [Understanding the Example Organizational Workflow Data Input Spreadsheet](organizational_workflow_data_model.md#understanding-the-example-organizational-workflow-data-input-spreadsheet)

@@ -8,3 +8,4 @@ hosts
 /roles/fortigate.ztp/vars/fortigates/
 /roles/fortigate.ztp/files/spreadsheets/Evoke_SDWAN_Demo.xlsx
 /roles/fortigate.ztp/files/spreadsheets/Evoke_Ansible_ZTP_v1.14.xlsx
+

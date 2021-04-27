@@ -1,0 +1,10 @@
+{% if (item.1.zones | length > 0) %}
+config system zone
+{% for zone in item.1.zones %}
+    edit {{ zone.name }}
+        set interface {{ zone.members | join(" ") }}
+        set intrazone deny
+    next
+{% endfor %}
+end
+{% endif %}

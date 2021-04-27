@@ -1,0 +1,34 @@
+{% if (item.1.fap_ssids | length > 0) %}
+config firewall address
+{% for ssid in item.1.fap_ssids %}
+{% if ssid.captive_exempt_cidrs %}
+{% if (ssid.captive_exempt_cidrs | length > 0) %}
+{% for exemption in ssid.captive_exempt_cidrs %}
+    edit "{{ exemption }}"
+        set subnet "{{ exemption }}"
+    next
+{% endfor %}
+{% endif %}
+{% endif %}
+{% endfor %}
+end
+{% endif %}
+{% if (item.1.fap_ssids | length > 0) %}
+config user security-exempt-list
+{% for ssid in item.1.fap_ssids %}
+{% if ssid.captive_exempt_cidrs %}
+{% if (ssid.captive_exempt_cidrs | length > 0) %}
+    edit "{{ ssid.ssid }}_exempt_list"
+        config rule
+{% for exemption in ssid.captive_exempt_cidrs %}
+            edit 0
+                set dstaddr {{ exemption }}
+        next
+{% endfor %}
+    end
+{% endif %}
+{% endif %}
+{% endfor %}
+end
+{% endif %}
+

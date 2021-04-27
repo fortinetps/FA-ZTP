@@ -1,0 +1,27 @@
+{% if (item.1.radius_servers | length > 0)  %}
+config user radius
+{% for radius in item.1.radius_servers %}
+    edit {{ radius.name }}
+        set server {{ radius.radius_server_ip }}
+        set secret fortinet
+{% if radius.source_ip %}
+        set source-ip {{ radius.source_ip }}
+{% endif %}
+{% if radius.radius_coa %}
+        set radius-coa {{ radius.radius_coa }}
+{% endif %}
+{% if radius.timeout %}
+        set timeout {{ radius.timeout }}
+    next
+{% endif %}
+{% endfor %}
+end
+config user group
+{% for radius in item.1.radius_servers %}
+    edit {{ radius.name }}_grp
+        set member {{ radius.name }}
+    next
+{% endfor %}
+end
+{% endif %}
+

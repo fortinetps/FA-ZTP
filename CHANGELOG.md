@@ -4,9 +4,48 @@
 
 # Releases
 
+* [v0.4 - 4/26/21](#v04)
 * [v0.3 - 4/22/21](#v03)
 * [v0.2 - 4/21/21](#v02)
 * [v0.1 - 4/20/21](#v01)
+
+## v0.4
+
+* Added IPv6 Addresses on the Network Interfaces
+* Added validation with FortiAP Radio1/2 Channel Width/Bonding settings
+* Added Enterprise Radius FortiAP Authentication
+* Added basic Captive Portal for SSIDs
+* Added Radius Server 
+* Added Radius Server User group 
+* Changed the "Set Community" field to a parsed list under BGP Route Maps
+* Added additional fields to BGP Neighbors & Neighbor Groups:
+  * Update Source
+  * Graceful Restart
+  * Soft Configuration
+* Added AS Path Lists with Regex Expressions 
+* Added Prefix Lists
+* Added IPSec Remote IP
+* Added IPSec Allow Access list
+* Added IPSec Bandwidth Limits
+* Added a third digit to the intrinsic sort order of the dvmdb Jinja2 scripts to allow for more customization.
+  * This leaves plenty of out-of-box sort order ranges for use.
+
+The Organizational Workflow Data Model has undergone significant changes as a result of the additions above:
+
+![](docs/images/spreadsheet_data_model_v0.4.png)
+
+### Known Issues
+
+* FortiManager does not allow parentheses in network interface names. It considers them a XSS character in the API.
+  * You cannot use parentheses in the Network tab of the Organizational Workflow Data Model.
+  * ![](docs/images/known_issues/parens_in_interface_names.png)
+* There is an issue when trying to specify the FortiAP "Radio 1/2 Band" Settings.
+  * This feature doesn't always work, and we think it is a bug within the FortiManager API. 
+  * If the generated scripts are manually copied and pasted, they seem to work within a FortiGate v6.4.4 CLI.
+  * If the 'FortiAP_Profiles' dvmdb script constant fails on the "band" value then just remove it and fix it later within
+    FortiManager, for now.
+* "Radio 1/2 Mode" is currently not implemented as an actual Jinja2 template item
+  * The default is "Access Point" and the only other choice is "Monitor" -- we're leaving this for a later release.
 
 ## v0.3
 

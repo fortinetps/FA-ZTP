@@ -1,0 +1,47 @@
+{% if (item.1.fgt_lan_vlan_map | length > 0)  %}
+config system interface
+{% for vlan in item.1.fgt_lan_vlan_map %}
+{% if (vlan.vlan_id != 0) and (vlan.physical_interface != 'fortilink') %}
+    edit {{ vlan.network_alias }}
+        set vlanid {{ vlan.vlan_id }}
+        set color 2
+        set interface {{ vlan.physical_interface }}
+        set vdom {{ item.1.fgt_vdom }}
+        set mode static
+        set ip {{ vlan.ipv4_gateway }}
+{% if vlan.allow_access %}
+        set allowaccess {{ vlan.allow_access | join(' ') }}
+{% endif %}
+{% if vlan.device_detection %}
+        set device-identification {{ vlan.device_detection }}
+{% endif %}
+{% if vlan.ipv6_gateway %}
+        config ipv6
+            set ip6-address {{ vlan.ipv6_gateway }}
+        end
+{% endif %}
+    next
+{% endif %}
+{% if (vlan.vlan_id == 0) and (vlan.physical_interface != 'fortilink') %}
+    edit {{ vlan.physical_interface }}
+        set type physical
+        set color 1
+        set vdom {{ item.1.fgt_vdom }}
+        set mode static
+        set ip {{ vlan.ipv4_gateway }}
+{% if vlan.allow_access %}
+        set allowaccess {{ vlan.allow_access | join(' ') }}
+{% endif %}
+{% if vlan.device_detection %}
+        set device-identification {{ vlan.device_detection }}
+{% endif %}
+{% if vlan.ipv6_gateway %}
+        config ipv6
+            set ip6-address {{ vlan.ipv6_gateway }}
+        end
+{% endif %}
+    next
+{% endif %}
+{% endfor %}
+end
+{% endif %}

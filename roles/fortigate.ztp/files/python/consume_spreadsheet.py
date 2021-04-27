@@ -125,20 +125,21 @@ def generate_fortigate_var_files(sheets=None):
             'fgt_wan3_ul_speed_kbps': fgt['WAN3 UL kbps'],
             'fmgr_target_adom': fgt['FMGR ADOM'],
             'fgt_vdom': fgt['FGT VDOM'],
+            'fortilink_stack_ip': fgt['FortiLink Stack IP'],
             'fmgr_target_device_group': fgt['FMGR Device Group'],
             'fgt_local_bgp_as': None,
             'fap_profiles': [],
         }
         # 'fgt_fortiswitch_trunk_interfaces': fgt['FortiSwitch Trunk Interfaces']
-        if fgt['FortiSwitch Trunk Interfaces']:
-            if "," in fgt['FortiSwitch Trunk Interfaces']:
-                fgt_dict['fgt_fortiswitch_trunk_interfaces'] = fgt['FortiSwitch Trunk Interfaces'].split(',')
-            elif "\n" in fgt['FortiSwitch Trunk Interfaces']:
-                fgt_dict['fgt_fortiswitch_trunk_interfaces'] = fgt['FortiSwitch Trunk Interfaces'].split('\n')
+        if fgt['FortiLink Trunk Interfaces']:
+            if "," in fgt['FortiLink Trunk Interfaces']:
+                fgt_dict['fgt_fortilink_trunk_interfaces'] = fgt['FortiLink Trunk Interfaces'].split(',')
+            elif "\n" in fgt['FortiLink Trunk Interfaces']:
+                fgt_dict['fgt_fortilink_trunk_interfaces'] = fgt['FortiLink Trunk Interfaces'].split('\n')
             else:
-                fgt_dict['fgt_fortiswitch_trunk_interfaces'] = [fgt['FortiSwitch Trunk Interfaces']]
+                fgt_dict['fgt_fortilink_trunk_interfaces'] = [fgt['FortiLink Trunk Interfaces']]
         else:
-            fgt_dict['fgt_fortiswitch_trunk_interfaces'] = []
+            fgt_dict['fgt_fortilink_trunk_interfaces'] = []
 
         # get the fortigate location name by device name
         for device_location in sheets['DeviceLocations']:
@@ -174,14 +175,15 @@ def generate_fortigate_var_files(sheets=None):
         for network in sheets['Networks']:
             if fgt_dict['fgt_name'] == network['FortiGate Name']:
                 formatted_network = format_excel_columns(network)
-                if "," in formatted_network['allow_access']:
-                    allow_access = formatted_network['allow_access'].split(',')
-                elif "\n" in formatted_network['allow_access']:
-                    allow_access = formatted_network['allow_access'].split('\n')
-                else:
-                    allow_access = [formatted_network['allow_access']]
-                formatted_network['allow_access'] = allow_access
-                fgt_dict['fgt_lan_vlan_map'].append(formatted_network)
+                if formatted_network['allow_access']:
+                    if "," in formatted_network['allow_access']:
+                        allow_access = formatted_network['allow_access'].split(',')
+                    elif "\n" in formatted_network['allow_access']:
+                        allow_access = formatted_network['allow_access'].split('\n')
+                    else:
+                        allow_access = [formatted_network['allow_access']]
+                    formatted_network['allow_access'] = allow_access
+                    fgt_dict['fgt_lan_vlan_map'].append(formatted_network)
 
         # create the zones
         fgt_dict['zones'] = []
@@ -249,33 +251,58 @@ def generate_fortigate_var_files(sheets=None):
                 fgt_dict['fortiaps'].append(fap_dict)
 
         for fap_profile in fgt_dict['fap_profiles']:
-            if "," in fap_profile['radio_1_channels']:
-                r1_channels = fap_profile['radio_1_channels'].split(',')
-            elif "\n" in fap_profile['radio_1_channels']:
-                r1_channels = fap_profile['radio_1_channels'].split('\n')
-            else:
-                r1_channels = [fap_profile['radio_1_channels']]
-            fap_profile['radio_1_channels'] = r1_channels
+            if fap_profile['radio_1_channels']:
+                if "," in fap_profile['radio_1_channels']:
+                    r1_channels = fap_profile['radio_1_channels'].split(',')
+                elif "\n" in fap_profile['radio_1_channels']:
+                    r1_channels = fap_profile['radio_1_channels'].split('\n')
+                else:
+                    r1_channels = [fap_profile['radio_1_channels']]
+                fap_profile['radio_1_channels'] = r1_channels
 
-            if "," in fap_profile['radio_2_channels']:
-                r2_channels = fap_profile['radio_2_channels'].split(',')
-            elif "\n" in fap_profile['radio_2_channels']:
-                r2_channels = fap_profile['radio_2_channels'].split('\n')
-            else:
-                r2_channels = [fap_profile['radio_2_channels']]
-            fap_profile['radio_2_channels'] = r2_channels
+            if fap_profile['radio_2_channels']:
+                if "," in fap_profile['radio_2_channels']:
+                    r2_channels = fap_profile['radio_2_channels'].split(',')
+                elif "\n" in fap_profile['radio_2_channels']:
+                    r2_channels = fap_profile['radio_2_channels'].split('\n')
+                else:
+                    r2_channels = [fap_profile['radio_2_channels']]
+                fap_profile['radio_2_channels'] = r2_channels
 
         # get the SSIDs assigned to the FortiGate LOCATION (we assume all FAPs in that location in all SSIDs
         # you can edit this later in the resulting files under {{role_path}}/vars/fortigates/
         fgt_dict["fap_ssids"] = []
         for ssid in sheets['SSIDs']:
-            if fgt_dict['fgt_name'] == ssid['Upstream FortiGate Name']:
+            if fgt_dict['fgt_name'] == ssid['FortiGate Name']:
+                if ssid['Captive Exempt CIDRs']:
+                    if "," in ssid['Captive Exempt CIDRs']:
+                        exempts = ssid['Captive Exempt CIDRs'].split(',')
+                    elif '\n' in ssid['Captive Exempt CIDRs']:
+                        exempts = ssid['Captive Exempt CIDRs'].split('\n')
+                    else:
+                        exempts = [ssid['Captive Exempt CIDRs']]
+                    exempts = [x.strip() for x in exempts]
+                    ssid['Captive Exempt CIDRs'] = exempts
                 fgt_dict["fap_ssids"].append(format_excel_columns(ssid))
+
+        fgt_dict['radius_servers'] = []
+        for radius in sheets['Radius_Servers']:
+            if fgt_dict['fgt_name'] == radius['FortiGate Name']:
+                fgt_dict['radius_servers'].append(format_excel_columns(radius))
 
         # now get the ipsec vpns assigned to this fortigate
         fgt_dict["ipsec"] = []
         for ipsec in sheets['IPSec']:
             if fgt_dict['fgt_name'] == ipsec['FortiGate Name']:
+                if ipsec['Allow Access']:
+                    if "," in ipsec['Allow Access']:
+                        allow_access = ipsec['Allow Access'].split(',')
+                    elif "\n" in ipsec['Allow Access']:
+                        allow_access = ipsec['Allow Access'].split('\n')
+                    else:
+                        allow_access = [ipsec['Allow Access']]
+                    allow_access = [x.strip() for x in allow_access]
+                    ipsec['Allow Access'] = allow_access
                 fgt_dict['ipsec'].append(format_excel_columns(ipsec))
 
         # now get sdwan interfaces assigned to this fortigate
@@ -321,6 +348,15 @@ def generate_fortigate_var_files(sheets=None):
         fgt_dict['bgp_route_maps'] = []
         for route_map in sheets['BGP_Route_Maps']:
             if fgt_dict['fgt_name'] == route_map['FortiGate Name']:
+                if route_map['Set Community']:
+                    if "," in route_map['Set Community']:
+                        set_community = route_map['Set Community'].split(',')
+                    elif "\n" in route_map['Set Community']:
+                        set_community = route_map['Set Community'].split("\n")
+                    else:
+                        set_community = [route_map['Set Community']]
+                    set_community = [x.strip() for x in set_community]
+                    route_map['Set Community'] = set_community
                 fgt_dict['bgp_route_maps'].append(format_excel_columns(route_map))
 
         # get bgp community lists
@@ -328,6 +364,18 @@ def generate_fortigate_var_files(sheets=None):
         for community_list in sheets['BGP_Community_Lists']:
             if fgt_dict['fgt_name'] == community_list['FortiGate Name']:
                 fgt_dict['bgp_community_lists'].append(format_excel_columns(community_list))
+
+        # get AS PATH LISTS
+        fgt_dict['as_path_lists'] = []
+        for aspath_list in sheets['ASPath_Lists']:
+            if fgt_dict['fgt_name'] == aspath_list['FortiGate Name']:
+                fgt_dict['as_path_lists'].append(format_excel_columns(aspath_list))
+
+        # get route prefix lists
+        fgt_dict['prefix_lists'] = []
+        for prefix_list in sheets['Prefix_Lists']:
+            if fgt_dict['fgt_name'] == prefix_list['FortiGate Name']:
+                fgt_dict['prefix_lists'].append(format_excel_columns(prefix_list))
 
         # now get any policy packages
         fgt_dict['policy_packages'] = []
@@ -354,6 +402,7 @@ def generate_fortigate_var_files(sheets=None):
                             monports = ha['Monitor Ports'].split('\n')
                         else:
                             monports = [ha['Monitor Ports']]
+                        monports = [x.strip() for x in monports]
                         ha['Monitor Ports'] = monports
                 else:
                     ha['Monitor Ports'] = []
@@ -365,6 +414,7 @@ def generate_fortigate_var_files(sheets=None):
                         haports = ha['HA Ports'].split('\n')
                     else:
                         haports = [ha['HA Ports']]
+                    haports = [x.strip() for x in haports]
                     x = 0
                     haports_indexes = []
                     for port in haports:
@@ -384,6 +434,7 @@ def generate_fortigate_var_files(sheets=None):
                     subnets = addr_grp['Subnets'].split('\n')
                 else:
                     subnets = [addr_grp['Subnets']]
+                subnets = [x.strip() for x in subnets]
                 addr_grp['Subnets'] = subnets
             fgt_dict['address_groups'].append(format_excel_columns(addr_grp))
 
@@ -398,6 +449,7 @@ def generate_fortigate_var_files(sheets=None):
                     ports = svc_grp['Ports'].split('\n')
                 else:
                     ports = [svc_grp['Ports']]
+                ports = [x.strip() for x in ports]
                 svc_grp['Ports'] = ports
             fgt_dict['service_groups'].append(format_excel_columns(svc_grp))
 
@@ -408,8 +460,9 @@ def generate_fortigate_var_files(sheets=None):
 def main():
     parser = argparse.ArgumentParser(description="Ansible ZTP Excel Workbook Importer")
     parser.add_argument("--file",
-                        # default="../spreadsheets/Ansible_ZTP_Local_Simple_Topology.xlsx",
-                        default="../spreadsheets/Evoke_SDWAN_Demo.xlsx",
+                        default="../spreadsheets/Ansible_ZTP_Local_Simple_Topology.xlsx",
+                        # default="../spreadsheets/Evoke_SDWAN_Demo.xlsx",
+                        # default="../spreadsheets/Accenture_ZTP.xlsx",
                         help="File path for Excel XLSX Workbook")
     parser.add_argument("--role_vars_dir",
                         default=None,

@@ -1,0 +1,26 @@
+{% if item.1.sdwan_interfaces | length > 0 %}
+{% if 'VM' not in item.1.fgt_device_model %}
+config firewall policy
+    delete 1
+end
+{% endif %}
+config system sdwan
+    set status enable
+    config members
+{% for sdwintf in item.1.sdwan_interfaces %}
+{% if sdwintf.type == 'underlay' %}
+        edit {{ sdwintf.id }}
+            set interface "{{ sdwintf.interface }}"
+            set zone "{{ sdwintf.zone }}"
+{% if sdwintf.gateway %}
+            set gateway {{ sdwintf.gateway }}
+{% endif %}
+{% if sdwintf.cost %}
+            set cost {{ sdwintf.cost }}
+{% endif %}
+        next
+{% endif %}
+{% endfor %}
+    end
+end
+{% endif %}

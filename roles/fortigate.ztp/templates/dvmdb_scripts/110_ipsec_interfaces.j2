@@ -1,0 +1,23 @@
+{% if item.1.ipsec | length > 0 %}
+config system interface
+{% for vpn in item.1.ipsec %}
+    edit "{{ vpn.vpn_name }}"
+{% if vpn.allow_access %}
+        set allowaccess {{ vpn.allow_access | join(' ') }}
+{% endif %}
+{% if vpn.ul_speed_kbps %}
+        set estimated-upstream-bandwidth {{ vpn.ul_speed_kbps }}
+{% endif %}
+{% if vpn.dl_speed_kbps %}
+        set estimated-downstream-bandwidth {{ vpn.dl_speed_kbps }}
+{% endif %}
+{% if vpn.vpn_interface_ip %}
+        set ip {{ vpn.vpn_interface_ip }}
+{% endif %}
+{% if vpn.remote_interface_ip %}
+        set remote-ip {{ vpn.remote_interface_ip }}
+{% endif %}
+    next
+{% endfor %}
+end
+{% endif %}

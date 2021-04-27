@@ -23,7 +23,7 @@
 #- import_playbook: ./ztp_steps/02.10_install-fgt-settings.yml
 #- import_playbook: ./ztp_steps/02.11_install-fgt-policy-packages.yml
 
-#- import_playbook: ./ztp_steps/50.00_export-rendered-dvmdb-scripts-to-files.yml
+- import_playbook: ./ztp_steps/50.00_export-rendered-dvmdb-scripts-to-files.yml
 
 #- import_playbook: ./ztp_steps/900.11_debug-rendered-dvmdb-scripts.yml
 #

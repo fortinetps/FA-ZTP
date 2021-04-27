@@ -1,0 +1,8 @@
+config router bgp
+    set as {% if item.1.fgt_local_bgp_as %}{{ item.1.fgt_local_bgp_as }}{% else %}65000{% endif %}
+
+    set ibgp-multipath enable
+    set additional-path enable
+    set additional-path-select 4
+    set graceful-restart enable
+    end

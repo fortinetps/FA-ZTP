@@ -57,9 +57,9 @@ class FortiGates(Base):
     wan3_ip = Column(String)
     wan3_ul_kbps = Column(String)
     wan3_dl_kbps = Column(String)
-    fortiswitch_trunk_interfaces = Column(String)
+    fortilink_trunk_interfaces = Column(String)
+    fortilink_stack_ip = Column(String)
     fmgr_device_group = Column(String)
-    provisioning_template_name = Column(String)
 
     device_locations = relationship("DeviceLocations")
 
@@ -78,7 +78,20 @@ class HA(Base):
     session_pickup = Column(String)
     session_pickup_connectionless = Column(String)
     priority = Column(String)
-    monitor = Column(String)
+    monitor_ports = Column(String)
+
+
+class TemplateAssignments(Base):
+    """ Template Assignment Data"""
+    __tablename__ = "template_assignments"
+    __table_args__ = (
+        PrimaryKeyConstraint('fortigate_name'),
+    )
+    fortigate_name = Column(String, ForeignKey("fortigates.fortigate_name"))
+    provisioning = Column(String)
+    sdwan = Column(String)
+    fortiswitch = Column(String)
+    fortiap = Column(String)
 
 
 class StaticRoutes(Base):
@@ -164,6 +177,9 @@ class SSIDs(Base):
     authentication = Column(String)
     bridge_vlan = Column(String)
     tunnel_ipv4_gateway = Column(String)
+    captive_portal_url = Column(String)
+    captive_user_groups = Column(String)
+    captive_exempt_cidrs = Column(String)
 
     fortigates = relationship("FortiGates")
 
@@ -186,10 +202,22 @@ class APProfiles(Base):
     radio_2_channel_width = Column(String)
     radio_1_channels = Column(String)
     radio_2_channels = Column(String)
-    radio_1_ssids = Column(String, ForeignKey("ssids.ssid"))
-    radio_2_ssids = Column(String, ForeignKey("ssids.ssid"))
 
     locations = relationship("Locations")
+
+
+class RadiusServers(Base):
+    """ Radius Server Data -- includes a dummy password in the role you have to change it later"""
+    __tablename__ = "radius_servers"
+    __table_args__ = (
+        PrimaryKeyConstraint('fortigate_name'),
+    )
+    fortigate_name = Column(String, ForeignKey("fortigates.fortigate_name"))
+    name = Column(String)
+    radius_server_ip = Column(String)
+    radius_coa = Column(String)
+    timeout = Column(String)
+    source_ip = Column(String)
 
 
 class IPSec(Base):
@@ -204,6 +232,7 @@ class IPSec(Base):
     vpn_type = Column(String)
     wan_gateway = Column(String)
     vpn_interface_ip = Column(String)
+    remote_interface_ip = Column(String)
     wan_interface = Column(String)
     psk = Column(String)
     ike_version = Column(Integer)
@@ -219,7 +248,9 @@ class IPSec(Base):
     overlay_id = Column(String)
     local_subnet = Column(String)
     remote_subnet = Column(String)
-    admin_access = Column(String)
+    allow_access = Column(String)
+    ul_speed_kbps = Column(String)
+    dl_speed_kbps = Column(String)
     comments = Column(String)
 
     fortigates = relationship("FortiGates")
@@ -316,6 +347,10 @@ class BGPRouteMaps(Base):
     name = Column(String)
     set_community = Column(String)
     match_community_list = Column(String, ForeignKey("bgpCommunityLists.name"))
+    set_route_tag = Column(String)
+    match_as_path = Column(String)
+    set_local_preference = Column(String)
+    match_ip_address = Column(String)
 
     fortigates = relationship("FortiGates")
     community_lists = relationship("BGPCommunityLists")
@@ -339,6 +374,9 @@ class BGPNeighbors(Base):
     link_failover = Column(String)
     connect_timer = Column(String)
     advertisement_interval = Column(String)
+    update_source = Column(String)
+    graceful_restart = Column(String)
+    soft_recognition = Column(String)
     comments = Column(String)
 
     fortigates = relationship("FortiGates")
@@ -362,10 +400,40 @@ class BGPNeighborGroups(Base):
     link_failover = Column(String)
     connect_timer = Column(String)
     advertisement_interval = Column(String)
+    update_source = Column(String)
+    graceful_restart = Column(String)
+    soft_recognition = Column(String)
     comments = Column(String)
 
     fortigates = relationship("FortiGates")
     # route_maps = relationship("BGPRouteMaps", foreign_keys=[route_map_in, route_map_out, route_map_out_preferable])
+
+
+class ASPathLists(Base):
+    """ AS Path Lists"""
+    __tablename__ = "as_path_lists"
+    __table_args__ = (
+        PrimaryKeyConstraint('fortigate_name'),
+    )
+
+    fortigate_name = Column(String, ForeignKey("fortigates.fortigate_name"))
+    name = Column(String)
+    rule = Column(String)
+    regexp = Column(String)
+    action = Column(String)
+
+
+class PrefixLists(Base):
+    """ Prefix Lists"""
+    __tablename__ = "prefix_lists"
+    __table_args__ = (
+        PrimaryKeyConstraint('fortigate_name'),
+    )
+
+    fortigate_name = Column(String, ForeignKey("fortigates.fortigate_name"))
+    name = Column(String)
+    rule = Column(String)
+    prefix = Column(String)
 
 
 class AddressGroups(Base):

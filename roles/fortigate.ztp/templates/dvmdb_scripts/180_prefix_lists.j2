@@ -1,0 +1,15 @@
+{% if item.1.prefix_lists | length > 0 %}
+config router prefix-list
+{% for prefix_list in item.1.prefix_lists %}
+    edit "{{ prefix_list.name }}"
+        config rule
+            edit {{ prefix_list.rule }}
+                set prefix {{ prefix_list.prefix}}
+                unset ge
+                unset le
+            next
+        end
+    next
+{% endfor %}
+end
+{% endif %}

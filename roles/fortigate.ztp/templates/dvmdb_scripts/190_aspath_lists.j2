@@ -1,0 +1,16 @@
+{% if item.1.as_path_lists | length > 0 %}
+config router aspath-list
+{% for as_path_list in item.1.as_path_lists %}
+    edit "{{ as_path_list.name }}"
+        config rule
+            edit {{ as_path_list.rule }}
+                set action {{ as_path_list.action }}
+{% if as_path_list.regexp %}
+                set regexp "{{ as_path_list.regexp }}"
+{% endif %}
+            next
+        end
+    next
+{% endfor %}
+end
+{% endif %}

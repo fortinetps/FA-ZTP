@@ -1,0 +1,11 @@
+{% if (item.1.fortiswitches | length > 0)  %}
+config switch-controller managed-switch
+{% for switch in item.1.fortiswitches %}
+    edit {{ switch.fortiswitch_serial_number }}
+        set name {{ switch.fortiswitch_name }}
+        set fsw-wan1-admin enable
+        set description {{ switch.fortiswitch_platform | replace("FortiSwitch", "FSW") }}
+    next
+{% endfor %}
+end
+{% endif %}

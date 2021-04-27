@@ -1,0 +1,42 @@
+{% if item.1.bgp_neighbor_groups | length > 0 %}
+config router bgp
+    config neighbor-group
+{% for neighbor in item.1.bgp_neighbor_groups %}
+        edit "{{ neighbor.neighbor_group_name }}"
+            set remote-as {{ neighbor.remote_as }}
+{% if neighbor.soft_reconfiguration %}
+            set soft-reconfiguration {{ neighbor.soft_reconfiguration }}
+{% endif %}
+{% if neighbor.graceful_restart %}
+            set capability-graceful-restart {{ neighbor.graceful_restart }}
+{% endif %}
+{% if neighbor.advertisement_interval %}
+            set advertisement-interval {{ neighbor.advertisement_interval }}
+{% endif %}
+{% if neighbor.link_failover %}
+            set link-down-failover {{ neighbor.link_failover }}
+{% endif %}
+{% if neighbor.comments %}
+            set description "{{ neighbor.comments }}"
+{% endif %}
+ {% if neighbor.connect_timer %}
+            set connect-timer {{ neighbor.connect_timer }}
+{% endif %}
+{% if neighbor.route_map_in %}
+            set route-map-in {{ neighbor.route_map_in }}
+{% endif %}
+{% if neighbor.route_map_out %}
+            set route-map-out {{ neighbor.route_map_out }}
+{% endif %}
+{% if neighbor.route_map_out_preferable %}
+            set route-map-out-preferable {{ neighbor.route_map_out_preferable }}
+{% endif %}
+{% if neighbor.update_source %}
+            set update-source {{ neighbor.update_source }}
+{% endif %}
+        next
+{% endfor %}
+    end
+
+end
+{% endif %}
