@@ -464,8 +464,6 @@ def main():
     parser = argparse.ArgumentParser(description="Ansible ZTP Excel Workbook Importer")
     parser.add_argument("--file",
                         default="../spreadsheets/Ansible_ZTP_Local_Simple_Topology.xlsx",
-                        # default="../spreadsheets/Evoke_SDWAN_Demo.xlsx",
-                        # default="../spreadsheets/Accenture_ZTP.xlsx",
                         help="File path for Excel XLSX Workbook")
     parser.add_argument("--role_vars_dir",
                         default=None,
