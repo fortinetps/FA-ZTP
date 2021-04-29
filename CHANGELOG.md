@@ -4,11 +4,17 @@
 
 # Releases
 
+* [v0.5.1 - 4/29/21](#v051)
 * [v0.5 - 4/27/21](#v05)
 * [v0.4 - 4/26/21](#v04)
 * [v0.3 - 4/22/21](#v03)
 * [v0.2 - 4/21/21](#v02)
 * [v0.1 - 4/20/21](#v01)
+
+## v0.5.1
+
+* Fixed an issue with radius user groups
+* Fixed a validation bug for extremely large input data sets.
 
 ## v0.5
 

@@ -9,3 +9,4 @@
       vars:
         spreadsheet_path: "{{ role_path }}/files/spreadsheets/Ansible_ZTP_Local_Simple_Topology.xlsx"
 
+

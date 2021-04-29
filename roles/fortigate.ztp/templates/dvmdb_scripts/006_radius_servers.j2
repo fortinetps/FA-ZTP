@@ -16,12 +16,5 @@ config user radius
 {% endif %}
 {% endfor %}
 end
-config user group
-{% for radius in item.1.radius_servers %}
-    edit {{ radius.name }}_grp
-        set member {{ radius.name }}
-    next
-{% endfor %}
-end
 {% endif %}
 

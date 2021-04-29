@@ -9,6 +9,7 @@ config wireless-controller vap
 {% if "enterprise" in ssid.security_mode and "captive" not in ssid.security_mode %}
         set auth radius
         set radius-server "{{ ssid.radius_server }}"
+        set usergroup "{{ ssid.radius_server }}_grp"
 {% endif %}
 {% if "captive" in ssid.security_mode %}
         set external-web "{{ ssid.captive_portal_url }}"
