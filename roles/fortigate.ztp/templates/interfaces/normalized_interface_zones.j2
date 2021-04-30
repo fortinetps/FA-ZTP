@@ -1,0 +1,15 @@
+{%- set interfaces = [] -%}
+{%- for fgt in ztp_fortigates -%}
+    {%- if fgt.fgt_lan_vlan_map | length > 0 -%}
+        {%- for vlan in fgt.fgt_lan_vlan_map -%}
+            {%- if vlan.zone -%}
+            {%- set append_dict = {'normalized_interface': vlan.zone, 'fmgr_target_adom': fgt.fmgr_target_adom,
+                                'fmgr_object_description_string': fgt.fmgr_object_description_string,
+                                'local_port': vlan.zone, 'fgt_vdom': fgt.fgt_vdom,
+                                'fgt_name': fgt.fgt_name, } -%}
+            {{ interfaces.append(append_dict) }}
+            {%- endif -%}
+        {%- endfor -%}
+    {%- endif -%}
+{%- endfor -%}
+{{ interfaces | to_json }}

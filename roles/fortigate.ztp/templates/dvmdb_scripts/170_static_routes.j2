@@ -14,5 +14,23 @@ config router static
 {% endif %}
     next
 {% endfor %}
+{% if not item.1.fgt_wan1_ip and item.1.fgt_wan1_port %}
+    edit 0
+        set device {{ item.1.fgt_wan1_port }}
+        set dynamic-gateway enable
+    next
+{% endif %}
+{% if not item.1.fgt_wan2_ip and item.1.fgt_wan2_port %}
+    edit 0
+        set device {{ item.1.fgt_wan2_port }}
+        set dynamic-gateway enable
+    next
+{% endif %}
+{% if not item.1.fgt_wan3_ip and item.1.fgt_wan3_port %}
+    edit 0
+        set device {{ item.1.fgt_wan3_port }}
+        set dynamic-gateway enable
+    next
+{% endif %}
 end
 {% endif %}

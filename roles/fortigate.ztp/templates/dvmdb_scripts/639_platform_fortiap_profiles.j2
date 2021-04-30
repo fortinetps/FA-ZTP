@@ -1,0 +1,15 @@
+{% if (item.1.fap_profiles | length > 0) %}
+{% set platforms = [] %}
+{% for profile in item.1.fap_profiles %}
+{% if profile.fortiap_platform not in platforms %}{{ platforms.append(profile.fortiap_platform | replace("-","")) }}{% endif %}
+{% endfor %}
+config wireless-controller wtp-profile
+{% for platform in platforms %}
+    edit {{ platform }}-default
+        config platform
+            set type {{ platform | replace("FAP","") | replace("FortiAP", "") }}
+        end
+    next
+{% endfor %}
+end
+{% endif %}

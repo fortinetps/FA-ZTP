@@ -4,12 +4,20 @@
 
 # Releases
 
+* [v0.5.2 - 4/30/21](#v052)
 * [v0.5.1 - 4/29/21](#v051)
 * [v0.5 - 4/27/21](#v05)
 * [v0.4 - 4/26/21](#v04)
 * [v0.3 - 4/22/21](#v03)
 * [v0.2 - 4/21/21](#v02)
 * [v0.1 - 4/20/21](#v01)
+
+## v0.5.2
+
+* Added default FortiAP Profiles for any AP Platforms defined. 
+  * Helps reduce "conflicts" when attached to FortiManager.
+* Fixed an issue with Zone Normalized Interfaces.
+* Fixed static routes for dynamic gateways on DHCP WAN Interfaces.
 
 ## v0.5.1
 

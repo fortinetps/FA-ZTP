@@ -1,8 +1,20 @@
 ---
 - set_fact:
-    sdwan_zones: "{{ lookup('template', 'interfaces/sdwan_normalized_interfaces.j2')  }}"
+    normalized_interface_zones: "{{ lookup('template', 'interfaces/normalized_interface_zones.j2') | unique }}"
 
-#- debug: var=sdwan_zones
+- debug:
+    msg: "{{ normalized_interface_zones }}"
+
+
+- set_fact:
+    flattened_normalized_interface_zones: "{{ normalized_interface_zones |
+    json_query('[].{
+    normalized_interface: normalized_interface,
+    fmgr_target_adom: fmgr_target_adom,
+    fmgr_object_description_string: fmgr_object_description_string
+    }') | unique }}"
+
+#- debug: var=flattened_normalized_interface_zones
 
 
 - name: Add normalized interfaces
@@ -16,7 +28,7 @@
         data:
           name: '{{ item.normalized_interface }}'
           description: '{{ item.fmgr_object_description_string }}'
-  loop: "{{ sdwan_zones }}"
+  loop: "{{ flattened_normalized_interface_zones }}"
 
 
 - name: Add normalized interface mappings
@@ -32,4 +44,4 @@
               - name: '{{ item.fgt_name }}'
                 vdom: '{{ item.fgt_vdom }}'
             local-intf: '{{ item.local_port }}'
-  loop: "{{ sdwan_zones }}"
+  loop: "{{ normalized_interface_zones }}"

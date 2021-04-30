@@ -22,3 +22,8 @@
       vars:
         ztp_fortigates: "{{ hostvars['localhost']['ztp_fortigates'] }}"
 
+    - include_role:
+        name: ../roles/fortigate.ztp
+        tasks_from: add/normalized_zone_device_mapping
+      vars:
+        ztp_fortigates: "{{ hostvars['localhost']['ztp_fortigates'] }}"

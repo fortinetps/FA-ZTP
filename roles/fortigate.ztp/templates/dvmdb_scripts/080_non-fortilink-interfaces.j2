@@ -23,6 +23,7 @@ config system interface
     next
 {% endif %}
 {% if (vlan.vlan_id == 0) and (vlan.physical_interface != 'fortilink') %}
+{% if "internal" not in vlan.physical_interface %}
     edit {{ vlan.physical_interface }}
         set type physical
         set color 1
@@ -41,6 +42,26 @@ config system interface
         end
 {% endif %}
     next
+{% else %}
+    edit {{ vlan.physical_interface }}
+        set type hard-switch
+        set color 1
+        set vdom {{ item.1.fgt_vdom }}
+        set mode static
+        set ip {{ vlan.ipv4_gateway }}
+{% if vlan.allow_access %}
+        set allowaccess {{ vlan.allow_access | join(' ') }}
+{% endif %}
+{% if vlan.device_detection %}
+        set device-identification {{ vlan.device_detection }}
+{% endif %}
+{% if vlan.ipv6_gateway %}
+        config ipv6
+            set ip6-address {{ vlan.ipv6_gateway }}
+        end
+{% endif %}
+    next
+{% endif %}
 {% endif %}
 {% endfor %}
 end
