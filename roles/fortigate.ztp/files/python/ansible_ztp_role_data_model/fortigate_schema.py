@@ -181,6 +181,7 @@ def get_schema():
                     'fortiap_platform': And(str),
                     'fortiap_serial_number': And(str),
                     'upstream_fortigate_name': And(str),
+                    'fortiap_template': Or(str, None)
                 }
             ],
             'fortiswitches': [
@@ -189,6 +190,7 @@ def get_schema():
                     'fortiswitch_platform': And(str),
                     'fortiswitch_serial_number': And(str),
                     'upstream_fortigate_name': And(str),
+                    'fortiswitch_template': Or(str, None),
                     'ports': [
                         {
                             'allowed_vlans': Or(list, None),
@@ -355,9 +357,7 @@ def get_schema():
             ],
             'templates': [
                 {
-                    'fortiap': Or(str, None),
                     'fortigate_name': And(str),
-                    'fortiswitch':  Or(str, None),
                     'provisioning':  Or(str, None),
                     'sdwan':  Or(str, None),
                 }

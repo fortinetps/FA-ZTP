@@ -1,13 +1,13 @@
-- name: Assign SD-WAN templates
+---
+- name: Assign fortiswitch template
   fortinet.fortimanager.fmgr_generic:
-    method: add
-    rc_succeeded:
-      - 0
-       - -2 # already exists
+    method: update
     params:
-      - url: "/pm/wanprof/adom/{{ item.fmgr_target_adom }}/{{ item.templates[0].sdwan }}/scope member"
+      - url: "/pm/config/adom/{{ item.0.fmgr_target_adom }}/obj/fsp/managed-switch/{{ item.1.fortiswitch_serial_number }}"
         data:
-          - name: '{{ item.fgt_name }}'
-            vdom: "{{ item.fgt_vdom }}"
-  loop: "{{ ztp_fortigates }}"
-  when: item.templates | length == 1
+          template: '{{ item.1.fortiswitch_template }}'
+        'scope member':
+          - name: '{{ item.0.fgt_name }}'
+            vdom: '{{ item.0.fgt_vdom }}'
+  loop: "{{ ztp_fortigates | subelements('fortiswitches')}}"
+  when: item.1.fortiswitch_template

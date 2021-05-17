@@ -28,6 +28,8 @@ class DeviceLocations(Base):
     device_model = Column(String, nullable=False)
     device_name = Column(String, nullable=False)
     upstream_fortigate_name = Column(String)
+    fortiswitch_template = Column(String)
+    fortiap_template = Column(String)
 
     # Relationships
     locations = relationship("Locations")

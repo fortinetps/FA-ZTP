@@ -210,13 +210,14 @@ def generate_fortigate_var_files(sheets=None):
                             'fortiswitch_platform': device['Device Model'],
                             'fortiswitch_serial_number': device['Device Serial Number'],
                             'upstream_fortigate_name': device['Upstream FortiGate Name'],
+                            'fortiswitch_template': device['FortiSwitch Template'],
                             'ports': []}
                 fgt_dict['fortiswitches'].append(fsw_dict)
 
         # get the fortiswitch port data
         for fsw in fgt_dict['fortiswitches']:
             for fswport in sheets['FortiSwitchPorts']:
-                if fswport['FortiSwitch Name'] == fsw['fortiswitch_name']:
+                if fswport['FortiSwitch Name'] == fsw['fortiswitch_name'] and not fsw['fortiswitch_template']:
                     fsw_port_dict = format_excel_columns(fswport)
                     if fsw_port_dict['allowed_vlans']:
                         if "," in fsw_port_dict['allowed_vlans']:
@@ -238,7 +239,8 @@ def generate_fortigate_var_files(sheets=None):
                             'fortiap_platform': device['Device Model'],
                             'fortiap_serial_number': device['Device Serial Number'],
                             'fap_profile': None,
-                            'upstream_fortigate_name': device['Upstream FortiGate Name']}
+                            'upstream_fortigate_name': device['Upstream FortiGate Name'],
+                            'fortiap_template': device['FortiAP Template']}
                 for fap_profile in sheets["AP_Profiles"]:
                     # look for a matching FortiAP Profile by Location Name and AP Platform
                     if fgt_dict['fgt_location_name'] == fap_profile["Location Name"]:

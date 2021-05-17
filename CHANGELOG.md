@@ -4,6 +4,7 @@
 
 # Releases
 
+* [v0.6 - 5/17/21](#v06)
 * [v0.5.2 - 4/30/21](#v052)
 * [v0.5.1 - 4/29/21](#v051)
 * [v0.5 - 4/27/21](#v05)
@@ -11,6 +12,16 @@
 * [v0.3 - 4/22/21](#v03)
 * [v0.2 - 4/21/21](#v02)
 * [v0.1 - 4/20/21](#v01)
+
+## v0.6
+
+* Added the ability to assign FortiSwitches and FortiAPs to FortiManager Templates.
+  * Simplifies data entry on spreadsheet for similar deployments
+  * Moved the fields from "Template Assignments" to the "DeviceLocations" sheet.
+    * Allows per-AP and per-SW template assignments.
+* If a FortiSwitch Template is defined, any specified ports in the spreadsheet are ignored for that switch.
+  * Do not fill out ports for switches intended for use with templates.
+* Old spreadsheets will have to be updated for the column changes. Please see the example spreadsheets.
 
 ## v0.5.2
 

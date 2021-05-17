@@ -1,0 +1,15 @@
+---
+- name: Assign fortiap template
+  fortinet.fortimanager.fmgr_generic:
+    method: update
+    params:
+      - url: "/pm/config/adom/{{ item.0.fmgr_target_adom }}/obj/wireless-controller/wtp/{{ item.1.fortiap_serial_number }}"
+        data:
+          name: '{{ item.1.fortiap_name }}'
+          wtp-id: '{{ item.1.fortiap_serial_number }}'
+          wtp-profile: '{{ item.1.fortiap_template }}'
+        'scope member': 
+          'name': '{{ item.0.fgt_name }}'
+          vdom: '{{ item.0.fgt_vdom }}'
+  loop: "{{ ztp_fortigates | subelements('fortiaps') }}"
+  when: item.1.fortiap_template

@@ -486,6 +486,14 @@
         ></TD><TD ALIGN="LEFT"
         ><FONT FACE="Bitstream Vera Sans">VARCHAR</FONT
         ></TD></TR> <TR><TD ALIGN="LEFT" BORDER="0"
+        ><FONT FACE="Bitstream Vera Sans">⚪ fortiap_template</FONT
+        ></TD><TD ALIGN="LEFT"
+        ><FONT FACE="Bitstream Vera Sans">VARCHAR</FONT
+        ></TD></TR> <TR><TD ALIGN="LEFT" BORDER="0"
+        ><FONT FACE="Bitstream Vera Sans">⚪ fortiswitch_template</FONT
+        ></TD><TD ALIGN="LEFT"
+        ><FONT FACE="Bitstream Vera Sans">VARCHAR</FONT
+        ></TD></TR> <TR><TD ALIGN="LEFT" BORDER="0"
         ><FONT FACE="Bitstream Vera Sans">⚪ upstream_fortigate_name</FONT
         ></TD><TD ALIGN="LEFT"
         ><FONT FACE="Bitstream Vera Sans">VARCHAR</FONT
