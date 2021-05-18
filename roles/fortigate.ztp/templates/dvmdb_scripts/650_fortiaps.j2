@@ -3,7 +3,9 @@ config wireless-controller wtp
 {% for fap in item.1.fortiaps %}
     edit {{ fap.fortiap_serial_number }}
         set admin enable
+{% if fap.fap_profile %}
         set wtp-profile {{ fap.fap_profile }}
+{% endif %}
     next
 {% endfor %}
 end

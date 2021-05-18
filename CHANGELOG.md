@@ -4,6 +4,7 @@
 
 # Releases
 
+* [v0.6.1 - 5/18/21](#v061)
 * [v0.6 - 5/17/21](#v06)
 * [v0.5.2 - 4/30/21](#v052)
 * [v0.5.1 - 4/29/21](#v051)
@@ -12,6 +13,10 @@
 * [v0.3 - 4/22/21](#v03)
 * [v0.2 - 4/21/21](#v02)
 * [v0.1 - 4/20/21](#v01)
+
+## v0.6.1
+
+* Fixed an issue with FortiAP Profiles missing while attempting to use FortiAP Templates.
 
 ## v0.6
 

@@ -176,7 +176,7 @@ def get_schema():
             'fmgr_target_device_group': Or(str, None),
             'fortiaps': [
                 {
-                    'fap_profile': And(str),
+                    'fap_profile': Or(str, None),
                     'fortiap_name': And(str),
                     'fortiap_platform': And(str),
                     'fortiap_serial_number': And(str),
